@@ -1,4 +1,4 @@
-# Dynamic-Blog
+# Dynamic-Blog "under construction"
 
 Welcome to the project of building a dynamic website where users can generate content in a simple and easy way. By this, we mean the creation and edition of blog posts. Users will also be able to create accounts to create their own blogs. This project includes both frontend and backend development, so anyone interested can view the code and understand how it works.
 
