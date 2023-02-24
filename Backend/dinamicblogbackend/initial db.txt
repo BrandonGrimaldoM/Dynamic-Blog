@@ -1,0 +1,41 @@
+-- Crear tabla "login"
+CREATE TABLE login (
+  id INT NOT NULL AUTO_INCREMENT,
+  user VARCHAR(50) NOT NULL,
+  password VARCHAR(50) NOT NULL,
+  perfil_id INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (perfil_id) REFERENCES perfil(id)
+);
+
+-- Crear tabla "perfil"
+CREATE TABLE perfil (
+  id INT NOT NULL AUTO_INCREMENT,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  email VARCHAR(50) NOT NULL,
+  avatar LONGBLOB,
+  PRIMARY KEY (id)
+);
+
+-- Crear tabla "blog"
+CREATE TABLE blog (
+  id INT NOT NULL AUTO_INCREMENT,
+  title VARCHAR(255) NOT NULL,
+  date DATE NOT NULL,
+  description TEXT NOT NULL,
+  image LONGBLOB,
+  perfil_id INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (perfil_id) REFERENCES perfil(id)
+);
+
+-- Crear tabla "documento"
+CREATE TABLE documento (
+  documento_id INT NOT NULL AUTO_INCREMENT,
+  html TEXT NOT NULL,
+  image LONGBLOB,
+  blog_id INT NOT NULL,
+  PRIMARY KEY (documento_id),
+  FOREIGN KEY (blog_id) REFERENCES blog(id)
+);
