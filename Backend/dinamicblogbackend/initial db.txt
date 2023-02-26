@@ -1,21 +1,21 @@
--- Crear tabla "login"
-CREATE TABLE login (
-  id INT NOT NULL AUTO_INCREMENT,
-  user VARCHAR(50) NOT NULL,
-  password VARCHAR(50) NOT NULL,
-  perfil_id INT NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (perfil_id) REFERENCES perfil(id)
-);
-
--- Crear tabla "perfil"
-CREATE TABLE perfil (
+-- Crear tabla "profile"
+CREATE TABLE profile (
   id INT NOT NULL AUTO_INCREMENT,
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
   email VARCHAR(50) NOT NULL,
   avatar LONGBLOB,
   PRIMARY KEY (id)
+);
+
+-- Crear tabla "login"
+CREATE TABLE login (
+  id INT NOT NULL AUTO_INCREMENT,
+  user VARCHAR(50) NOT NULL,
+  password VARCHAR(50) NOT NULL,
+  profile_id INT UNIQUE NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
 
 -- Crear tabla "blog"
@@ -25,17 +25,17 @@ CREATE TABLE blog (
   date DATE NOT NULL,
   description TEXT NOT NULL,
   image LONGBLOB,
-  perfil_id INT NOT NULL,
+  profile_id INT NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (perfil_id) REFERENCES perfil(id)
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
 
--- Crear tabla "documento"
-CREATE TABLE documento (
-  documento_id INT NOT NULL AUTO_INCREMENT,
-  html TEXT NOT NULL,
+-- Crear tabla "document"
+CREATE TABLE document (
+  document_id INT NOT NULL AUTO_INCREMENT,
+  html VARCHAR(50) NOT NULL,
   image LONGBLOB,
   blog_id INT NOT NULL,
-  PRIMARY KEY (documento_id),
+  PRIMARY KEY (document_id),
   FOREIGN KEY (blog_id) REFERENCES blog(id)
 );
