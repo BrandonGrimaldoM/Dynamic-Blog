@@ -4,12 +4,16 @@ import { dataSourceOptions } from 'db/data-source';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BlogModule } from './blog/blog.module';
-import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { ProfileModule } from './profile/profile.module';
+import { LoginModule } from './login/login.module';
 @Module({
   imports: [
-    ConfigModule.forRoot(),
     TypeOrmModule.forRoot(dataSourceOptions),
     BlogModule,
+    AuthModule,
+    ProfileModule,
+    LoginModule,
   ],
   controllers: [AppController],
   providers: [AppService],

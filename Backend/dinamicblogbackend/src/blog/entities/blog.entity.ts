@@ -93,6 +93,9 @@ export class DocumentEntity {
   @Column({ length: 50, nullable: false })
   html: string;
 
+  @Column({ type: 'text', nullable: true })
+  text: string;
+
   @Column({ type: 'longblob', nullable: true })
   image: Buffer;
 
