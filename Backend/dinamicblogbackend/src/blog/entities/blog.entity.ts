@@ -73,6 +73,9 @@ export class BlogEntity {
   @Column({ type: 'longblob', nullable: true })
   image: Buffer;
 
+  @Column({ length: 255, nullable: false })
+  state: string;
+
   @Column({ name: 'profile_id', nullable: false })
   profileId: number;
 
