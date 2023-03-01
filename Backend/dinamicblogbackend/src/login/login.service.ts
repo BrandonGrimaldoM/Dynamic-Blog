@@ -13,6 +13,7 @@ import {
 import { Repository } from 'typeorm';
 import { CreateLoginDto } from './dto/create-login.dto';
 import { UpdateLoginDto } from './dto/update-login.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class LoginService {
@@ -40,6 +41,8 @@ export class LoginService {
     });
 
     await this.profileRepository.save(profile); // guardar ProfileEntity en la BD para obtener el ID generado
+    //contra
+    const hash = await bcrypt.hash(password, 10);
 
     const login = this.loginRepository.create({
       user,
@@ -47,9 +50,11 @@ export class LoginService {
       profileId: profile.id, // asignar el ID generado al LoginEntity
     });
 
+    login.password = hash;
+
     await this.loginRepository.save(login);
 
-    return { profile, login };
+    return { profile, user: login.user };
   }
 
   async findAll() {

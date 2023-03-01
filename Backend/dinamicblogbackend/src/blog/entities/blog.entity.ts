@@ -6,6 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'profile' })
 export class ProfileEntity {
@@ -41,7 +42,8 @@ export class LoginEntity {
   @Column({ length: 50, nullable: false })
   user: string;
 
-  @Column({ length: 50, nullable: false })
+  @Exclude()
+  @Column({ length: 255, nullable: false })
   password: string;
 
   @Column({ name: 'profile_id', nullable: false, unique: true })
