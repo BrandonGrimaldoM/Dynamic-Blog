@@ -65,6 +65,11 @@ export class LoginService {
     return `This action returns a #${id} login`;
   }
 
+  async findByUsername(user: string): Promise<LoginEntity> {
+    const login = await this.loginRepository.findOne({ where: { user } });
+    return login;
+  }
+
   async update(id: number, updateLoginDto: UpdateLoginDto) {
     const login = await this.loginRepository.findOne({ where: { id } });
     if (!login) {

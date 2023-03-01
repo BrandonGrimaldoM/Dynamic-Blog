@@ -21,5 +21,6 @@ import {
   ],
   controllers: [LoginController],
   providers: [LoginService],
+  exports: [LoginService],
 })
 export class LoginModule {}
