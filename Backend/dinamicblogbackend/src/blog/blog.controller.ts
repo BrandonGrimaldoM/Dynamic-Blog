@@ -11,6 +11,7 @@ import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { CreateDocDto } from './dto/create-doc.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import { UpdateDocDto } from './dto/update-doc.dto';
 import { BlogEntity, DocumentEntity } from './entities/blog.entity';
 @Controller('blog')
 export class BlogController {
@@ -42,12 +43,24 @@ export class BlogController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
-    return this.blogService.update(+id, updateBlogDto);
+  async update(@Param('id') id: number, @Body() updateBlogDto: UpdateBlogDto) {
+    return await this.blogService.update(id, updateBlogDto);
+  }
+
+  @Patch('docs/:id')
+  async updateDoc(@Param('id') id: number, @Body() updateDocDto: UpdateDocDto) {
+    return await this.blogService.updateDoc(id, updateDocDto);
+  }
+
+  @Delete('docs/:id')
+  async removeDoc(@Param('id') id: string): Promise<{ message: string }> {
+    await this.blogService.removeDoc(Number(id));
+    return { message: `Blog ${id} has been deleted` };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.blogService.remove(+id);
+  async remove(@Param('id') id: string): Promise<{ message: string }> {
+    await this.blogService.remove(Number(id));
+    return { message: `Blog ${id} has been deleted` };
   }
 }

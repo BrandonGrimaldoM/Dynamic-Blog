@@ -24,11 +24,11 @@ export class ProfileEntity {
   @Column({ type: 'longblob', nullable: true })
   avatar: Buffer;
 
-  @OneToMany(() => LoginEntity, (login) => login.profile)
+  @OneToMany(() => LoginEntity, (login) => login.profile, { cascade: true })
   @JoinColumn({ name: 'profile_id' })
   logins: LoginEntity[];
 
-  @OneToMany(() => BlogEntity, (blog) => blog.profile)
+  @OneToMany(() => BlogEntity, (blog) => blog.profile, { cascade: true })
   @JoinColumn({ name: 'profile_id' })
   blogs: BlogEntity[];
 }
@@ -47,7 +47,9 @@ export class LoginEntity {
   @Column({ name: 'profile_id', nullable: false, unique: true })
   profileId: number;
 
-  @OneToMany(() => DocumentEntity, (document) => document.blog)
+  @OneToMany(() => DocumentEntity, (document) => document.blog, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'blog_id' })
   documents: DocumentEntity[];
 
@@ -79,7 +81,9 @@ export class BlogEntity {
   @Column({ name: 'profile_id', nullable: false })
   profileId: number;
 
-  @OneToMany(() => DocumentEntity, (document) => document.blog)
+  @OneToMany(() => DocumentEntity, (document) => document.blog, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'blog_id' })
   documents: DocumentEntity[];
 

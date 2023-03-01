@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { CreateDocDto } from './dto/create-doc.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import { UpdateDocDto } from './dto/update-doc.dto';
 import {
   BlogEntity,
   ProfileEntity,
@@ -74,11 +75,51 @@ export class BlogService {
     return `This action returns a #${id} blog`;
   }
 
-  update(id: number, updateBlogDto: UpdateBlogDto) {
-    return `This action updates a #${id} blog`;
+  async update(id: number, updateBlogDto: UpdateBlogDto) {
+    const blog = await this.blogRepository.findOne({ where: { id } });
+    if (!blog) {
+      throw new NotFoundException(`Login with id ${id} not found`);
+    }
+
+    blog.title = updateBlogDto.title;
+    blog.description = updateBlogDto.description;
+    blog.date = DateTime.local().toJSDate();
+    blog.state = updateBlogDto.state;
+
+    await this.blogRepository.save(blog);
+
+    return blog;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} blog`;
+  async updateDoc(id: number, updateDocDto: UpdateDocDto) {
+    const document = await this.documentRepository.findOne({ where: { id } });
+    if (!document) {
+      throw new NotFoundException(`Login with id ${id} not found`);
+    }
+
+    document.html = updateDocDto.html;
+    document.text = updateDocDto.text;
+
+    await this.documentRepository.save(document);
+
+    return document;
+  }
+
+  async removeDoc(id: number): Promise<void> {
+    const doc = await this.documentRepository.findOne({ where: { id } });
+    if (!doc) {
+      throw new NotFoundException(`Login with id ${id} not found`);
+    }
+    await this.documentRepository.delete(id);
+  }
+
+  async remove(blogId: number): Promise<void> {
+    const blog = await this.blogRepository.findOne({ where: { id: blogId } });
+
+    if (!blog) {
+      throw new NotFoundException(`Blog with ID ${blogId} not found`);
+    }
+    await this.documentRepository.delete({ blogId });
+    await this.blogRepository.delete(blogId);
   }
 }

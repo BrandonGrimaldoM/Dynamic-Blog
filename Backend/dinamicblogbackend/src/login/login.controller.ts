@@ -33,12 +33,16 @@ export class LoginController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLoginDto: UpdateLoginDto) {
-    return this.loginService.update(+id, updateLoginDto);
+  async update(
+    @Param('id') id: number,
+    @Body() updateLoginDto: UpdateLoginDto,
+  ) {
+    return await this.loginService.update(id, updateLoginDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.loginService.remove(+id);
+  async remove(@Param('id') id: string): Promise<{ message: string }> {
+    await this.loginService.remove(+id);
+    return { message: `Blog ${id} has been deleted` };
   }
 }

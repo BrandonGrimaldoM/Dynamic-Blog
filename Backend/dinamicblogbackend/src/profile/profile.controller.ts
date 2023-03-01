@@ -31,8 +31,11 @@ export class ProfileController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-    return this.profileService.update(+id, updateProfileDto);
+  async update(
+    @Param('id') id: number,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
+    return await this.profileService.update(id, updateProfileDto);
   }
 
   @Delete(':id')
