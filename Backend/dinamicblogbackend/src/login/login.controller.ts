@@ -10,11 +10,18 @@ import {
 import { LoginService } from './login.service';
 import { CreateLoginDto } from './dto/create-login.dto';
 import { UpdateLoginDto } from './dto/update-login.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { Public } from '../auth/docorators/public.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Login')
+@UseGuards(JwtAuthGuard)
 @Controller('login')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
+  @Public()
   @Post()
   async create(@Body() createLoginDto: CreateLoginDto) {
     const result = await this.loginService.create(createLoginDto);

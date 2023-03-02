@@ -13,6 +13,13 @@ import { CreateDocDto } from './dto/create-doc.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { UpdateDocDto } from './dto/update-doc.dto';
 import { BlogEntity, DocumentEntity } from './entities/blog.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { Public } from '../auth/docorators/public.decorator';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('Blog')
+@UseGuards(JwtAuthGuard)
 @Controller('blog')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
@@ -27,11 +34,13 @@ export class BlogController {
     return await this.blogService.createDoc(createDocDto);
   }
 
+  @Public()
   @Get()
   async findAll(): Promise<BlogEntity[]> {
     return await this.blogService.findAll();
   }
 
+  @Public()
   @Get('docs')
   async findAllDoc(): Promise<DocumentEntity[]> {
     return await this.blogService.findAllDoc();

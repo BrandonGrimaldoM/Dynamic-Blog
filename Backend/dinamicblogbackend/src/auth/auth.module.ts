@@ -4,6 +4,7 @@ import { AuthController } from './controllers/auth.controller';
 import { LoginModule } from '../login/login.module';
 import { PassportModule } from '@nestjs/passport/dist';
 import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt/dist';
 import { config } from 'dotenv';
 import { ConfigService } from '@nestjs/config';
@@ -20,7 +21,7 @@ const configService = new ConfigService();
       },
     }),
   ],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
