@@ -76,17 +76,18 @@ export class LoginService {
       throw new NotFoundException(`Login with id ${id} not found`);
     }
 
-    if (updateLoginDto.user) {
+    if (updateLoginDto.user != '') {
       login.user = updateLoginDto.user;
     }
 
-    if (updateLoginDto.password) {
-      login.password = updateLoginDto.password;
+    if (updateLoginDto.password != '') {
+      const hash = await bcrypt.hash(updateLoginDto.password, 10);
+      login.password = hash;
     }
 
     await this.loginRepository.save(login);
 
-    return login;
+    return { user: login.user };
   }
 
   async remove(profileId: number): Promise<void> {

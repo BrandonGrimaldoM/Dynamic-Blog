@@ -1,7 +1,92 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { CookieValueTypes, getCookie, setCookie } from 'cookies-next';
+import { NextPageContext } from 'next';
+import axios from 'axios';
 
 function Profile() {
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [user, setUser] = useState("");
+  const [profileid, setProfileid] = useState("");
+  const [userid, setUserid] = useState("");
+
+  const getProfile = async (token: CookieValueTypes) => {
+    try {
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      const response = await axios.get('http://localhost:3000/profile/' + getCookie('user'), config);
+      setFirstName(response.data.profile.first_name);
+      setLastName(response.data.profile.last_name);
+      setEmail(response.data.profile.email);
+      setUser(response.data.user);
+      setProfileid(response.data.profile.id);
+      setUserid(response.data.id);
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    if (getCookie('token') && getCookie('user')) {
+      const token = getCookie('token');
+      getProfile(token);
+    }
+  }, [])
+
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+  });
+
+  const [formDataUser, setFormDataUser] = useState({
+    user: '',
+    password: '',
+  });
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData(prevState => ({ ...prevState, [name]: value }));
+  }
+
+  const handleChangeUser = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormDataUser(prevState => ({ ...prevState, [name]: value }));
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+
+    // ...Enviar formulario
+    try {
+      if (getCookie('token')) {
+        const config = {
+          headers: { Authorization: `Bearer ${getCookie('token')}` }
+        };
+
+        const response = await axios.patch('http://localhost:3000/profile/' + profileid, formData, config);
+        const responseUser = await axios.patch('http://localhost:3000/login/' + userid, formDataUser, config);
+        setCookie('user', responseUser.data.user);
+        
+      }
+
+      // redirect to login page
+    } catch (error) {
+      alert("Empty fields or username occupied");
+
+      return;
+    }
+
+  }
+
+
   return (
     <React.Fragment>
       <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -16,24 +101,18 @@ function Profile() {
               </div>
             </div>
             <div className="mt-5 md:col-span-2 md:mt-0">
-              <form action="#" method="POST">
+              <form onSubmit={handleSubmit} method="POST">
                 <div className="shadow sm:overflow-hidden sm:rounded-md">
                   <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Photo</label>
                       <div className="mt-1 flex items-center">
-                        <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
+                        <span className="inline-block h-50 w-50 overflow-hidden rounded-full bg-gray-100">
                           <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                           </svg>
                         </span>
-                        <button
-                          type="button"
-                          className="ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        >
-                          Change
-                        </button>
                       </div>
                     </div>
 
@@ -80,9 +159,11 @@ function Profile() {
                         </label>
                         <input
                           type="text"
-                          name="first-name"
-                          id="first-name"
-                          autoComplete="given-name"
+                          name="first_name"
+                          id="first_name"
+                          autoComplete="on"
+                          defaultValue={firstName}
+                          onChange={handleChange}
                           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                         />
                       </div>
@@ -93,22 +174,56 @@ function Profile() {
                         </label>
                         <input
                           type="text"
-                          name="last-name"
-                          id="last-name"
-                          autoComplete="family-name"
+                          name="last_name"
+                          id="last_name"
+                          defaultValue={lastName}
+                          onChange={handleChange}
+                          autoComplete="on"
                           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                         />
                       </div>
 
                       <div className="col-span-6 ">
-                        <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                           Email address
                         </label>
                         <input
-                          type="text"
-                          name="email-address"
-                          id="email-address"
+                          type="email"
+                          name="email"
+                          id="email"
+                          defaultValue={email}
+                          onChange={handleChange}
                           autoComplete="email"
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+
+                      <div className="col-span-6 ">
+                        <label htmlFor="user" className="block text-sm font-medium text-gray-700">
+                          User
+                        </label>
+                        <input
+                          type="text"
+                          name="user"
+                          id="user  "
+                          defaultValue={user}
+                          onChange={handleChangeUser}
+                          autoComplete="on"
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+
+                      <div className="col-span-6 ">
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                          Password
+                        </label>
+                        <input
+                          type="password"
+                          name="password"
+                          id="password"
+                          placeholder="*****************"
+                          onChange={handleChangeUser}
+                          autoComplete="on"
                           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                         />
                       </div>
@@ -132,4 +247,28 @@ function Profile() {
     </React.Fragment>
   )
 }
+
+
+export async function getServerSideProps(context: NextPageContext) {
+  const { req, res } = context;
+
+  // Verificar si la cookie existe
+  const token = getCookie('token') ? true : false;
+
+  if (!token) {
+    // Si la cookie no existe, redirigir al usuario a la página de inicio de sesión
+    if (res) {
+      res.writeHead(302, { Location: '/' });
+      res.end();
+    } else {
+      // Si se ejecuta en el lado del cliente, redirigir utilizando la API del navegador
+      window.location.href = '/';
+    }
+  }
+
+  // Si la cookie existe, continuar con la renderización de la página
+  return { props: {} };
+}
+
+
 export default Profile;

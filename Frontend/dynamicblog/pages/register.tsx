@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-unescaped-entities */
-import React from "react";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/router';
 
 
 
@@ -9,6 +11,58 @@ function classNames(...classes: any[]) {
 }
 
 function Register() {
+
+    const [formData, setFormData] = useState({
+        first_name: '',
+        last_name: '',
+        user: '',
+        email: '',
+        password: '',
+    });
+
+    const router = useRouter();
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setFormData(prevState => ({ ...prevState, [name]: value }));
+      }
+
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        const password = (event.currentTarget.elements.namedItem(
+            "password"
+        ) as HTMLInputElement).value;
+        const confirmPassword = (event.currentTarget.elements.namedItem(
+            "confirm_password"
+        ) as HTMLInputElement).value;
+
+        if (password !== confirmPassword || password == "") {
+            const passwordError = document.getElementById("password-error");
+            if (passwordError) {
+                passwordError.innerText = "Passwords do not match";
+                setTimeout(() => {
+                    passwordError.innerText ="";
+                }, 5000);
+              }
+            return;
+        }
+
+
+
+        // ...Enviar formulario
+        try {
+            const response = await axios.post('http://localhost:3000/login', formData);
+            
+            // redirect to login page
+        } catch (error) {
+            alert("Empty fields or username occupied");
+        
+            return;
+        }
+
+        router.push('/login');
+    }
 
     return (
         <React.Fragment>
@@ -21,7 +75,7 @@ function Register() {
                         alt="Dynamic Blog"
                     />
                 </div>
-                <form action="#" method="POST" className="mx-auto mt-16 max-w-xl sm:mt-20">
+                <form onSubmit={handleSubmit} method="POST" className="mx-auto mt-16 max-w-xl sm:mt-20">
                     <div className="grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-2">
                         <div>
                             <label htmlFor="first-name" className="block text-sm font-semibold leading-6 text-gray-900">
@@ -30,9 +84,10 @@ function Register() {
                             <div className="mt-2.5">
                                 <input
                                     type="text"
-                                    name="first-name"
-                                    id="first-name"
-                                    autoComplete="given-name"
+                                    name="first_name"
+                                    id="first_name"
+                                    autoComplete="on"
+                                    onChange={handleChange}
                                     className="block w-full rounded-md border-0 py-2 px-3.5 text-sm leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
                                 />
                             </div>
@@ -44,9 +99,10 @@ function Register() {
                             <div className="mt-2.5">
                                 <input
                                     type="text"
-                                    name="last-name"
-                                    id="last-name"
-                                    autoComplete="family-name"
+                                    name="last_name"
+                                    id="last_name"
+                                    autoComplete="on"
+                                    onChange={handleChange}
                                     className="block w-full rounded-md border-0 py-2 px-3.5 text-sm leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
                                 />
                             </div>
@@ -60,7 +116,8 @@ function Register() {
                                     type="text"
                                     name="user"
                                     id="user"
-                                    autoComplete="user"
+                                    autoComplete="on"
+                                    onChange={handleChange}
                                     className="block w-full rounded-md border-0 py-2 px-3.5 text-sm leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
                                 />
                             </div>
@@ -75,6 +132,7 @@ function Register() {
                                     name="email"
                                     id="email"
                                     autoComplete="email"
+                                    onChange={handleChange}
                                     className="block w-full rounded-md border-0 py-2 px-3.5 text-sm leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
                                 />
                             </div>
@@ -89,6 +147,7 @@ function Register() {
                                     name="password"
                                     id="password"
                                     autoComplete="password"
+                                    onChange={handleChange}
                                     className="block w-full rounded-md border-0 py-2 px-3.5 text-sm leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
                                 />
                             </div>
@@ -102,11 +161,12 @@ function Register() {
                             <div className="mt-2.5">
                                 <input
                                     type="password"
-                                    name="password"
-                                    id="password"
-                                    autoComplete="password"
+                                    name="confirm_password"
+                                    id="confirm_password"
+                                    autoComplete="confirm_password"
                                     className="block w-full rounded-md border-0 py-2 px-3.5 text-sm leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
                                 />
+                                <span id="password-error" className="text-red-500 text-sm"></span>
                             </div>
                         </div>
                     </div>
