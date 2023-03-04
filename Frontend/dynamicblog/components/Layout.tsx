@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from "next/router";
@@ -8,6 +9,9 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
 import Link from 'next/link';
 import { getCookie, deleteCookie } from 'cookies-next';
+import { useSelector, useDispatch } from "react-redux";
+import { setProfileData } from '@/reducers/profile-reducer';
+import axios from 'axios';
 
 interface Props {
   children?: ReactNode;
@@ -24,15 +28,40 @@ const Layout = ({ children }: Props) => {
   const [blogState, setBlogState] = useState(false);
   const [contactState, setContactState] = useState(false);
   const [loginToken, setLoginToken] = useState(false);
+  const profileData = useSelector((state: any) => state.profile);
+  const dispatch = useDispatch();
+
+
+  const loginVerification = async () => {
+    try {
+      const token = getCookie('token');
+      const user = getCookie('user');
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+
+      const responseProfile = await axios.get('http://localhost:3000/profile/' + user, config);
+      dispatch(setProfileData(responseProfile.data))
+
+
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
-    if(getCookie('token')){
+    if (getCookie('token')) {
+      console.log(getCookie('token'))
       setLoginToken(true);
-    }else{
+      if (profileData.length === 0) {
+        loginVerification();
+      }
+    } else {
       setLoginToken(false);
     }
-  }, [])
-  
+  }, [profileData])
+
 
   useEffect(() => {
     if (router.pathname === "/") {
@@ -61,7 +90,7 @@ const Layout = ({ children }: Props) => {
     { name: 'Contact', href: '/contact', current: contactState },
   ]
 
-  
+
 
   return (
     <React.Fragment>
@@ -161,7 +190,7 @@ const Layout = ({ children }: Props) => {
                               <Link
                                 href="/login"
                                 className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                                onClick={() => {deleteCookie('token'),deleteCookie('user')}}
+                                onClick={() => { deleteCookie('token'), deleteCookie('user'), dispatch(setProfileData([])) }}
                               >
                                 Sign out
                               </Link>

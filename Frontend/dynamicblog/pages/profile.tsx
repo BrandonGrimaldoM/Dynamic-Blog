@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
 import React, { useEffect, useState } from "react";
-import { CookieValueTypes, getCookie, setCookie } from 'cookies-next';
+import { getCookie, setCookie } from 'cookies-next';
 import { NextPageContext } from 'next';
 import axios from 'axios';
+import { useSelector, useDispatch } from "react-redux";
+import { setProfileData } from "../reducers/profile-reducer";
 
 function Profile() {
 
@@ -13,31 +15,21 @@ function Profile() {
   const [user, setUser] = useState("");
   const [profileid, setProfileid] = useState("");
   const [userid, setUserid] = useState("");
+  const profileData = useSelector((state: any) => state.profile);
+  const dispatch = useDispatch();
 
-  const getProfile = async (token: CookieValueTypes) => {
-    try {
-      const config = {
-        headers: { Authorization: `Bearer ${token}` }
-      };
-      const response = await axios.get('http://localhost:3000/profile/' + getCookie('user'), config);
-      setFirstName(response.data.profile.first_name);
-      setLastName(response.data.profile.last_name);
-      setEmail(response.data.profile.email);
-      setUser(response.data.user);
-      setProfileid(response.data.profile.id);
-      setUserid(response.data.id);
-      
-    } catch (error) {
-      console.log(error)
-    }
-  }
+
+
 
   useEffect(() => {
-    if (getCookie('token') && getCookie('user')) {
-      const token = getCookie('token');
-      getProfile(token);
-    }
-  }, [])
+    setFirstName(profileData.profile.first_name);
+    setLastName(profileData.profile.last_name);
+    setEmail(profileData.profile.email);
+    setUser(profileData.user);
+    setProfileid(profileData.profile.id);
+    setUserid(profileData.id);
+
+  }, [profileData])
 
   const [formData, setFormData] = useState({
     first_name: '',
@@ -74,7 +66,9 @@ function Profile() {
         const response = await axios.patch('http://localhost:3000/profile/' + profileid, formData, config);
         const responseUser = await axios.patch('http://localhost:3000/login/' + userid, formDataUser, config);
         setCookie('user', responseUser.data.user);
-        
+        const responseProfile = await axios.get('http://localhost:3000/profile/' + getCookie('user'), config);
+        dispatch(setProfileData(responseProfile.data))
+
       }
 
       // redirect to login page
