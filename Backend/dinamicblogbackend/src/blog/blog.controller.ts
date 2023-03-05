@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -44,6 +45,15 @@ export class BlogController {
   @Get('docs')
   async findAllDoc(): Promise<DocumentEntity[]> {
     return await this.blogService.findAllDoc();
+  }
+
+  @Public()
+  @Get('pagination')
+  async getBlogs(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ): Promise<BlogEntity[]> {
+    return this.blogService.getBlogs(page, limit);
   }
 
   @Get(':id')

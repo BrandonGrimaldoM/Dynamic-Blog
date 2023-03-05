@@ -64,11 +64,22 @@ export class BlogService {
   }
 
   async findAll(): Promise<BlogEntity[]> {
-    return await this.blogRepository.find();
+    return await this.blogRepository.find({
+      relations: ['profile', 'documents'],
+    });
   }
 
   async findAllDoc(): Promise<DocumentEntity[]> {
     return await this.documentRepository.find();
+  }
+
+  async getBlogs(page: number, limit: number): Promise<BlogEntity[]> {
+    const [blogs, total] = await this.blogRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { id: 'DESC' },
+    });
+    return blogs;
   }
 
   findOne(id: number) {

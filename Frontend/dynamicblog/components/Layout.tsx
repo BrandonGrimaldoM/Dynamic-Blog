@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { getCookie, deleteCookie } from 'cookies-next';
 import { useSelector, useDispatch } from "react-redux";
 import { setProfileData } from '@/reducers/profile-reducer';
+import { setBlogData } from '@/reducers/blog-reducer';
 import axios from 'axios';
 
 interface Props {
@@ -29,6 +30,7 @@ const Layout = ({ children }: Props) => {
   const [contactState, setContactState] = useState(false);
   const [loginToken, setLoginToken] = useState(false);
   const profileData = useSelector((state: any) => state.profile);
+  const blogData = useSelector((state: any) => state.blog);
   const dispatch = useDispatch();
 
 
@@ -39,15 +41,16 @@ const Layout = ({ children }: Props) => {
       const config = {
         headers: { Authorization: `Bearer ${token}` }
       };
-
       const responseProfile = await axios.get('http://localhost:3000/profile/' + user, config);
       dispatch(setProfileData(responseProfile.data))
-
-
-
     } catch (error) {
       console.log(error);
     }
+  }
+
+  const blogVerification = async () => {
+    const responseBlog = await axios.get('http://localhost:3000/blog');
+    dispatch(setBlogData(responseBlog.data));
   }
 
   useEffect(() => {
@@ -61,6 +64,13 @@ const Layout = ({ children }: Props) => {
       setLoginToken(false);
     }
   }, [profileData])
+
+
+  useEffect(() => {
+    if (blogData.length === 0) {
+      blogVerification();
+    }
+  }, [blogData])
 
 
   useEffect(() => {
