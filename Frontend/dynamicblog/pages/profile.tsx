@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
 import React, { useEffect, useState } from "react";
@@ -15,6 +16,9 @@ function Profile() {
   const [user, setUser] = useState("");
   const [profileid, setProfileid] = useState("");
   const [userid, setUserid] = useState("");
+
+  const [imageUrl, setImageUrl] = useState("");
+
   const profileData = useSelector((state: any) => state.profile);
   const dispatch = useDispatch();
 
@@ -28,6 +32,8 @@ function Profile() {
     setUser(profileData.user);
     setProfileid(profileData.profile.id);
     setUserid(profileData.id);
+    setImageUrl(profileData.profile.avatar.data);
+    console.log(imageUrl)
 
   }, [profileData])
 
@@ -35,7 +41,11 @@ function Profile() {
     first_name: '',
     last_name: '',
     email: '',
+    avatar: null,
   });
+
+
+
 
   const [formDataUser, setFormDataUser] = useState({
     user: '',
@@ -103,9 +113,11 @@ function Profile() {
                       <label className="block text-sm font-medium text-gray-700">Photo</label>
                       <div className="mt-1 flex items-center">
                         <span className="inline-block h-50 w-50 overflow-hidden rounded-full bg-gray-100">
-                          <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                          </svg>
+                          <img
+                            src={imageUrl}
+                            className="mx-auto h-full w-full text-gray-400"
+                            alt="avatar"
+                          />
                         </span>
                       </div>
                     </div>
@@ -134,7 +146,7 @@ function Profile() {
                               className="relative cursor-pointer rounded-md bg-white font-medium text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 hover:text-blue-500"
                             >
                               <span>Upload a file</span>
-                              <input id="file-upload" name="file-upload" type="file" className="sr-only" />
+                              <input id="file-upload" name="avatar" type="file" className="sr-only" onChange={handleChange} />
                             </label>
                             <p className="pl-1">or drag and drop</p>
                           </div>

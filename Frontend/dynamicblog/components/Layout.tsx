@@ -55,7 +55,6 @@ const Layout = ({ children }: Props) => {
 
   useEffect(() => {
     if (getCookie('token')) {
-      console.log(getCookie('token'))
       setLoginToken(true);
       if (profileData.length === 0) {
         loginVerification();

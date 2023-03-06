@@ -58,6 +58,10 @@ export class ProfileService {
       profile.last_name = updateProfileDto.last_name;
     }
 
+    if (updateProfileDto.avatar != null) {
+      profile.avatar = updateProfileDto.avatar;
+    }
+
     await this.profileRepository.save(profile);
 
     return profile;

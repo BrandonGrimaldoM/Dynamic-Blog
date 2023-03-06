@@ -14,7 +14,8 @@ import {
   UserCircleIcon
 } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch} from "react-redux";
+import { setCurrenlyBlogData } from "../reducers/currenly-blog-reducer";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -56,7 +57,7 @@ function BlogEditer() {
   const [profileLastName, setProfileLastName] = useState("");
   const blogData = useSelector((state: any) => state.blog);
   const profileData = useSelector((state: any) => state.profile);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     setBlog(blogData);
     if(profileData.length !== 0){
@@ -96,7 +97,7 @@ function BlogEditer() {
               </div>
               <div className="mt-5 flex lg:mt-0 lg:ml-4">
                 <span className="hidden sm:block">
-                  <Link href='/edit-blog'>
+                  <Link href='/edit-blog' onClick={() => dispatch(setCurrenlyBlogData(blog.id))}>
                     <button
                       type="button"
                       className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"

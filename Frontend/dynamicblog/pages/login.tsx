@@ -50,7 +50,7 @@ function Login() {
       
       const responseProfile = await axios.get('http://localhost:3000/profile/' + user, config);
       dispatch(setProfileData(responseProfile.data))
-      console.log(profileData);
+      
 
       // redirect to login page
     } catch (error) {

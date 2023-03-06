@@ -80,7 +80,7 @@ function Blog() {
                       />
                     </div>
                     <h3 className="text-base font-semibold text-gray-900 truncate">
-                      <Link href="#">
+                      <Link href={"/blog/"+blog.title}>
                         <span className="absolute inset-0" />
                         {blog.title}
                       </Link>
@@ -96,7 +96,11 @@ function Blog() {
               <nav aria-label="Page navigation" className="mt-20 font-semibold flex items-center justify-center">
                 <ul className="inline-flex -space-x-px ">
                   {pageNum !== 1 ?
-                    <li>
+                    <li onClick={()=>{
+                      setPageNum(pageNum - 1);
+                      setSelectedPage(pageNum - 1);
+                      dispatch(setPaginationData([]));
+                    }}>
                       <p className="px-3 py-2 ml-0 leading-tight text-white-500 bg-white border  hover:bg-blue-100 hover:text-white-700  cursor-pointer">Previous</p>
                     </li> : <li></li>
 

@@ -14,4 +14,6 @@ export class UpdateProfileDto extends PartialType(CreateProfileDto) {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  avatar: Buffer;
 }

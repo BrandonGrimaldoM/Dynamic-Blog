@@ -92,9 +92,14 @@ export class BlogService {
       throw new NotFoundException(`Login with id ${id} not found`);
     }
 
-    blog.title = updateBlogDto.title;
-    blog.description = updateBlogDto.description;
-    blog.date = DateTime.local().toJSDate();
+    if (updateBlogDto.title !== '') {
+      blog.title = updateBlogDto.title;
+    }
+
+    if (updateBlogDto.description !== '') {
+      blog.description = updateBlogDto.description;
+    }
+
     blog.state = updateBlogDto.state;
 
     await this.blogRepository.save(blog);
