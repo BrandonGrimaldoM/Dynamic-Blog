@@ -19,4 +19,6 @@ export class CreateBlogDto {
   @IsNotEmpty()
   @IsNumber()
   profileId: number;
+
+  image: Buffer;
 }

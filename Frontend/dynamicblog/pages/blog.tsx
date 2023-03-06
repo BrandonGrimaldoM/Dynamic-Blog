@@ -13,6 +13,7 @@ function Blog() {
     date: string;
     description: string;
     image?: any;
+    url?: any;
     state: string;
     profileId: number;
     profile: Profile;
@@ -74,8 +75,8 @@ function Blog() {
                   <div key={blog.id} className="group relative">
                     <div className="relative h-80 w-full overflow-hidden rounded-lg bg-gray-300 group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64">
                       <img
-                        src="#"
-                        alt="#"
+                        src={blog.url}
+                        alt={blog.title}
                         className="h-full w-full object-cover object-center"
                       />
                     </div>

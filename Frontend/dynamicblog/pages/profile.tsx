@@ -8,6 +8,8 @@ import axios from 'axios';
 import { useSelector, useDispatch } from "react-redux";
 import { setProfileData } from "../reducers/profile-reducer";
 
+
+
 function Profile() {
 
   const [firstName, setFirstName] = useState("");
@@ -17,7 +19,7 @@ function Profile() {
   const [profileid, setProfileid] = useState("");
   const [userid, setUserid] = useState("");
 
-  const [imageUrl, setImageUrl] = useState("");
+ 
 
   const profileData = useSelector((state: any) => state.profile);
   const dispatch = useDispatch();
@@ -26,16 +28,18 @@ function Profile() {
 
 
   useEffect(() => {
-    setFirstName(profileData.profile.first_name);
-    setLastName(profileData.profile.last_name);
-    setEmail(profileData.profile.email);
-    setUser(profileData.user);
-    setProfileid(profileData.profile.id);
-    setUserid(profileData.id);
-    setImageUrl(profileData.profile.avatar.data);
-    console.log(imageUrl)
+    if(profileData.length !== 0){
+      setFirstName(profileData.profile.first_name);
+      setLastName(profileData.profile.last_name);
+      setEmail(profileData.profile.email);
+      setUser(profileData.user);
+      setProfileid(profileData.profile.id);
+      setUserid(profileData.id);
+    }
 
   }, [profileData])
+
+  
 
   const [formData, setFormData] = useState({
     first_name: '',
@@ -52,9 +56,40 @@ function Profile() {
     password: '',
   });
 
+  
+  function fileToBuffer(file: File): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const buffer = Buffer.from(arrayBuffer);
+        resolve(buffer);
+      };
+      reader.onerror = () => {
+        reject(new Error('Error reading file'));
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+  
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData(prevState => ({ ...prevState, [name]: value }));
+    let { name, value, files } = event.target;
+    if(name === "avatar" && files !== null && event.target.files !== null){
+      console.log("soy avatar");
+      const file = event.target.files[0];
+      fileToBuffer(file)
+      .then((buffer) => {
+        console.log(buffer)
+        setFormData((prevState) => ({ ...prevState, [name]: buffer }));
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }else{
+      setFormData(prevState => ({ ...prevState, [name]: value }));
+    }
+    console.log(formData);
   }
 
   const handleChangeUser = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +107,7 @@ function Profile() {
         const config = {
           headers: { Authorization: `Bearer ${getCookie('token')}` }
         };
-
+        console.log(formData);
         const response = await axios.patch('http://localhost:3000/profile/' + profileid, formData, config);
         const responseUser = await axios.patch('http://localhost:3000/login/' + userid, formDataUser, config);
         setCookie('user', responseUser.data.user);
@@ -83,7 +118,7 @@ function Profile() {
 
       // redirect to login page
     } catch (error) {
-      alert("Empty fields or username occupied");
+      console.log(error)
 
       return;
     }
@@ -112,9 +147,9 @@ function Profile() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Photo</label>
                       <div className="mt-1 flex items-center">
-                        <span className="inline-block h-50 w-50 overflow-hidden rounded-full bg-gray-100">
+                        <span className="inline-block h-25 w-25 overflow-hidden rounded-full bg-gray-100 bg-cover">
                           <img
-                            src={imageUrl}
+                            src={profileData.avatarImg}
                             className="mx-auto h-full w-full text-gray-400"
                             alt="avatar"
                           />

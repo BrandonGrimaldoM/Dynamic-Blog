@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { LoginEntity, ProfileEntity } from 'src/blog/entities/blog.entity';
+import * as fs from 'fs';
+
 @Injectable()
 export class ProfileService {
   constructor(
@@ -33,7 +35,25 @@ export class ProfileService {
     const profile = await this.profileRepository.findOne({
       where: { id: login.profileId },
     });
-    return { profile, user: login.user, id: login.id };
+
+    if (profile.avatar === null) {
+      return {
+        profile,
+        user: login.user,
+        id: login.id,
+      };
+    } else {
+      const imagen: any = profile.avatar;
+      const imagenBuffer = Buffer.from(imagen, 'binary');
+      const base64Image = imagenBuffer.toString('base64');
+      const img = `data:image/jpeg;base64,${base64Image}`;
+      return {
+        profile,
+        avatarImg: img,
+        user: login.user,
+        id: login.id,
+      };
+    }
   }
 
   async update(id: number, updateProfileDto: UpdateProfileDto) {
@@ -59,7 +79,7 @@ export class ProfileService {
     }
 
     if (updateProfileDto.avatar != null) {
-      profile.avatar = updateProfileDto.avatar;
+      profile.avatar = Buffer.from(updateProfileDto.avatar);
     }
 
     await this.profileRepository.save(profile);

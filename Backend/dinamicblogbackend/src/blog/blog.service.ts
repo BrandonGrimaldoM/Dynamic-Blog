@@ -38,7 +38,14 @@ export class BlogService {
     blog.title = createBlogDto.title;
     blog.description = createBlogDto.description;
     blog.state = createBlogDto.state;
-
+    if (createBlogDto.image != null) {
+      blog.image = Buffer.from(createBlogDto.image);
+      const imagen: any = Buffer.from(createBlogDto.image);
+      const imagenBuffer = Buffer.from(imagen, 'binary');
+      const base64Image = imagenBuffer.toString('base64');
+      const img = `data:image/jpeg;base64,${base64Image}`;
+      blog.url = img;
+    }
     // Asignar la fecha actual al campo "date"
     blog.date = DateTime.local().toJSDate();
     blog.profile = profile;
@@ -64,9 +71,21 @@ export class BlogService {
   }
 
   async findAll(): Promise<BlogEntity[]> {
-    return await this.blogRepository.find({
+    const blog = await this.blogRepository.find({
       relations: ['profile', 'documents'],
+      select: [
+        'id',
+        'title',
+        'description',
+        'state',
+        'profileId',
+        'url',
+        'profile',
+        'documents',
+      ],
     });
+
+    return blog;
   }
 
   async findAllDoc(): Promise<DocumentEntity[]> {

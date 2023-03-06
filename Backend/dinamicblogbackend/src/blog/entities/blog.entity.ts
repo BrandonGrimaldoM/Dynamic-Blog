@@ -74,8 +74,12 @@ export class BlogEntity {
   @Column({ type: 'text', nullable: false })
   description: string;
 
+  @Exclude()
   @Column({ type: 'longblob', nullable: true })
   image: Buffer;
+
+  @Column({ type: 'longtext', nullable: true })
+  url: string;
 
   @Column({ length: 255, nullable: false })
   state: string;

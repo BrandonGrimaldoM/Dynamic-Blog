@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
-
+  app.use(bodyParser.json({ limit: '50mb' })); // Establece el límite de carga útil en 50 MB
   // Configuración Swagger en NestJS
   const config = new DocumentBuilder()
     .setTitle('Dinamic Blog')

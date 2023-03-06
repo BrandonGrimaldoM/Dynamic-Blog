@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getCookie } from 'cookies-next';
 import { setBlogData } from "../reducers/blog-reducer";
@@ -16,15 +16,56 @@ function CreateBlog() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    state: 'draft',
-    profileId: profileData.profile.id
+
   });
 
+  useEffect(() => {
+    if(profileData.length !== 0){
+      setFormData({
+        title: '',
+        description: '',
+        state: 'draft',
+        profileId: profileData.profile.id,
+        image: null,
+      });
+    }
+  }, [profileData])
+
+
+
+  function fileToBuffer(file: File): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const buffer = Buffer.from(arrayBuffer);
+        resolve(buffer);
+      };
+      reader.onerror = () => {
+        reject(new Error('Error reading file'));
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData(prevState => ({ ...prevState, [name]: value }));
+    const { name, value, files } = event.target;
+    if (name === "images" && files !== null && event.target.files !== null) {
+      console.log("soy avatar");
+      const file = event.target.files[0];
+      fileToBuffer(file)
+        .then((buffer) => {
+          console.log(buffer)
+          setFormData((prevState: any) => ({ ...prevState, image: buffer }));
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+
+      setFormData(prevState => ({ ...prevState, [name]: value }));
+    }
   }
   const handleChangeDesc = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -96,6 +137,39 @@ function CreateBlog() {
               </div>
             </div>
 
+          </div>
+          <label htmlFor="message" className="my-5 block text-sm font-semibold leading-6 text-gray-900">
+            Cover image
+          </label>
+          <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+
+            <div className="space-y-1 text-center">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 48 48"
+                aria-hidden="true"
+              >
+                <path
+                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <div className="flex text-sm text-gray-600">
+                <label
+                  htmlFor="file-upload"
+                  className="relative cursor-pointer rounded-md bg-white font-medium text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 hover:text-blue-500"
+                >
+                  <span>Upload a file</span>
+                  <input id="file-upload" name="images" type="file" className="sr-only" onChange={handleChange} />
+                </label>
+                <p className="pl-1">or drag and drop</p>
+              </div>
+              <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+            </div>
           </div>
           <div className="mt-10">
             <button
