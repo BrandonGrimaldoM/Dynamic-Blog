@@ -14,11 +14,12 @@ import {
   UserCircleIcon
 } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react';
-import { useSelector, useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { setCurrenlyBlogData } from "../reducers/currenly-blog-reducer";
 import { getCookie } from 'cookies-next';
 import { setBlogData } from "../reducers/blog-reducer";
 import axios from 'axios';
+import { NextPageContext } from 'next';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -63,7 +64,7 @@ function BlogEditer() {
   const dispatch = useDispatch();
   useEffect(() => {
     setBlog(blogData);
-    if(profileData.length !== 0){
+    if (profileData.length !== 0) {
 
       setProfileid(profileData.profile.id);
       setProfileFirstname(profileData.profile.first_name);
@@ -81,6 +82,30 @@ function BlogEditer() {
         };
 
         const responseNewDoc = await axios.delete("http://localhost:3000/blog/" + id, config);
+        dispatch(setBlogData([]));
+      }
+    } catch (error) {
+      console.log(error)
+      return;
+    }
+
+  }
+
+
+  async function handleSubmitState(event: React.MouseEvent<HTMLButtonElement>, id: number, stateInfo: string ) {
+    event.preventDefault();
+    // ...Enviar formulario
+    try {
+      if (getCookie('token')) {
+        const config = {
+          headers: { Authorization: `Bearer ${getCookie('token')}` }
+        };
+
+        const state = {
+          state: stateInfo
+        }
+
+        const responseUpdateState = await axios.patch("http://localhost:3000/blog/" + id, state, config);
         dispatch(setBlogData([]));
       }
     } catch (error) {
@@ -131,32 +156,47 @@ function BlogEditer() {
                 </span>
 
                 <span className="ml-3 hidden sm:block">
-                  <Link href={"/blog/"+ blog.title}>
-                  <button
-                    type="button"
-                    className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                  >
-                    <LinkIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                    View
-                  </button>
+                  <Link href={"/blog/" + blog.title}>
+                    <button
+                      type="button"
+                      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    >
+                      <LinkIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                      View
+                    </button>
                   </Link>
                 </span>
 
                 <span className="sm:ml-3">
-                  <button
-                    type="button"
-                    className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                  >
-                    <CheckIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
-                    Publish
-                  </button>
+                  {
+                    blog.state === "published" ?
+                      <button
+                        type="button"
+                        className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                        onClick={(even) => handleSubmitState(even, blog.id, "draft")}
+                      >
+                        <WrenchScrewdriverIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+                        Unpublish
+                      </button>
+                      :
+                      <button
+                        type="button"
+                        className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                        onClick={(even) => handleSubmitState(even, blog.id, "published")}
+                      >
+                        <CheckIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+                        Publish
+                      </button>
+
+                  }
+
                 </span>
 
                 <span className="sm:ml-3 max-sm:hidden">
                   <button
                     type="button"
                     className="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-                    onClick={(even) =>  handleSubmitDeleteBlog(even,blog.id) }
+                    onClick={(even) => handleSubmitDeleteBlog(even, blog.id)}
                   >
                     <XMarkIcon className="-ml-0.5 mr-0.2 h-5 w-5" aria-hidden="true" />
 
@@ -232,4 +272,26 @@ function BlogEditer() {
     </React.Fragment>
   )
 }
+
+export async function getServerSideProps(context: NextPageContext) {
+  const { req, res } = context;
+
+  // Verificar si la cookie existe
+  const token = getCookie('token') ? true : false;
+
+  if (!token) {
+    // Si la cookie no existe, redirigir al usuario a la página de inicio de sesión
+    if (res) {
+      res.writeHead(302, { Location: '/' });
+      res.end();
+    } else {
+      // Si se ejecuta en el lado del cliente, redirigir utilizando la API del navegador
+      window.location.href = '/';
+    }
+  }
+
+  // Si la cookie existe, continuar con la renderización de la página
+  return { props: {} };
+}
+
 export default BlogEditer;

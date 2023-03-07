@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getCookie } from 'cookies-next';
 import { setBlogData } from "../reducers/blog-reducer";
 import axios from 'axios';
-
+import { NextPageContext } from 'next';
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ')
@@ -805,4 +805,26 @@ function EditBlog() {
     </React.Fragment>
   )
 }
+
+export async function getServerSideProps(context: NextPageContext) {
+  const { req, res } = context;
+
+  // Verificar si la cookie existe
+  const token = getCookie('token') ? true : false;
+
+  if (!token) {
+    // Si la cookie no existe, redirigir al usuario a la página de inicio de sesión
+    if (res) {
+      res.writeHead(302, { Location: '/' });
+      res.end();
+    } else {
+      // Si se ejecuta en el lado del cliente, redirigir utilizando la API del navegador
+      window.location.href = '/';
+    }
+  }
+
+  // Si la cookie existe, continuar con la renderización de la página
+  return { props: {} };
+}
+
 export default EditBlog;

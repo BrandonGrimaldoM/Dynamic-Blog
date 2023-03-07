@@ -71,7 +71,7 @@ function Blog() {
             <div className="mx-auto max-w-2xl py-16 sm:py-24 ">
 
               <div className="mt-6 space-y-12 grid grid-cols-1 gap-x-6 ">
-                {blogs.map((blog) => (
+                {blogs.filter((view) => view.state === "published").map((blog) => (
                   <div key={blog.id} className="group relative">
                     <div className="relative h-80 w-full overflow-hidden rounded-lg bg-gray-300 group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64">
                       <img
@@ -81,7 +81,7 @@ function Blog() {
                       />
                     </div>
                     <h3 className="text-base font-semibold text-gray-900 truncate">
-                      <Link href={"/blog/"+blog.title}>
+                      <Link href={"/blog/" + blog.title}>
                         <span className="absolute inset-0" />
                         {blog.title}
                       </Link>
@@ -96,8 +96,9 @@ function Blog() {
 
               <nav aria-label="Page navigation" className="mt-20 font-semibold flex items-center justify-center">
                 <ul className="inline-flex -space-x-px ">
+
                   {pageNum !== 1 ?
-                    <li onClick={()=>{
+                    <li onClick={() => {
                       setPageNum(pageNum - 1);
                       setSelectedPage(pageNum - 1);
                       dispatch(setPaginationData([]));
@@ -109,6 +110,7 @@ function Blog() {
 
                   {
                     (() => {
+                      
                       const items = [];
                       for (let i = 0; i <= count; i++) {
 
@@ -118,7 +120,7 @@ function Blog() {
                             setSelectedPage(i + 1);
                             dispatch(setPaginationData([]));
                           }}>
-                            <p className={`px-3 py-2 leading-tight text-white-500 bg-white border hover:bg-blue-100 hover:text-white-700  cursor-pointer ${selectedPage === i + 1 ? "bg-blue-500 hover:bg-blue-500" : ""}`}>{i + 1}</p>
+                            <p className={`px-3 py-2 leading-tight text-white-500 bg-white border hover:bg-blue-100 hover:text-white-700 ${count < 1 ? "hidden" : null} cursor-pointer ${selectedPage === i + 1 ? "bg-blue-500 hover:bg-blue-500" : ""}`}>{i + 1}</p>
                           </li>
                         );
                       }

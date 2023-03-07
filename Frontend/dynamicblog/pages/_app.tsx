@@ -15,9 +15,11 @@ export default function App({ Component, pageProps }: AppProps) {
 
   if (router.pathname === '/login' || router.pathname === '/register') {
     // Si es así, renderiza el componente sin el layout
-    <Provider store={store}>
-      return <Component {...pageProps} />
-    </Provider>
+    return (
+      <Provider store={store}>
+        <Component {...pageProps} />
+      </Provider>
+    )
 
   }
 

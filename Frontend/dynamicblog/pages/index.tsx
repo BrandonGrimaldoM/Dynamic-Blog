@@ -90,7 +90,7 @@ function Home() {
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">Recent posts</h2>
 
           <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {blogs.slice(-4).reverse().map((blog) => (
+            {blogs.filter((view)=> view.state === "published").slice(-4).reverse().map((blog) => (
               <div key={blog.id} className="group relative">
                 <div className="min-h-40 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-40">
                   <img

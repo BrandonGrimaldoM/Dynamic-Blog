@@ -71,6 +71,7 @@ function Login() {
   return (
     <React.Fragment>
       <div className="isolate bg-white py-24 px-6 sm:py-32 lg:px-8">
+        <Link href="/">
         <div className="flex items-center justify-center mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Login</h2>
           <img
@@ -80,6 +81,7 @@ function Login() {
           />
 
         </div>
+        </Link>
         <form onSubmit={handleSubmit} method="POST" className="mx-auto mt-16 max-w-xl sm:mt-20">
           <div className="grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-2">
             <div className="sm:col-span-2">

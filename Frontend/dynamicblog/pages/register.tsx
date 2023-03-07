@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-
-
+import Link from 'next/link';
+import { NextPageContext } from 'next';
+import { getCookie } from 'cookies-next';
 
 function classNames(...classes: any[]) {
     return classes.filter(Boolean).join(' ')
@@ -67,6 +68,8 @@ function Register() {
     return (
         <React.Fragment>
             <div className="isolate bg-white py-24 px-6 sm:py-32 lg:px-8">
+                <Link href="/">
+                
                 <div className="flex items-center justify-center mx-auto max-w-2xl text-center">
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Sign up</h2>
                     <img
@@ -75,6 +78,7 @@ function Register() {
                         alt="Dynamic Blog"
                     />
                 </div>
+                </Link>
                 <form onSubmit={handleSubmit} method="POST" className="mx-auto mt-16 max-w-xl sm:mt-20">
                     <div className="grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-2">
                         <div>
@@ -184,4 +188,26 @@ function Register() {
         </React.Fragment>
     )
 }
+
+export async function getServerSideProps(context: NextPageContext) {
+    const { req, res } = context;
+  
+    // Verificar si la cookie existe
+    const token = getCookie('token') ? true : false;
+  
+    if (!token) {
+      // Si la cookie no existe, redirigir al usuario a la página de inicio de sesión
+      if (res) {
+        res.writeHead(302, { Location: '/' });
+        res.end();
+      } else {
+        // Si se ejecuta en el lado del cliente, redirigir utilizando la API del navegador
+        window.location.href = '/';
+      }
+    }
+  
+    // Si la cookie existe, continuar con la renderización de la página
+    return { props: {} };
+  }
+
 export default Register;
