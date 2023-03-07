@@ -29,6 +29,7 @@ function EditBlog() {
   const [editText, setEditText] = useState(false);
   const [editImage, setEditImage] = useState(false);
   const [auxDocId, setauxDocId] = useState(0);
+  
 
 
 
@@ -231,7 +232,7 @@ function EditBlog() {
           headers: { Authorization: `Bearer ${getCookie('token')}` }
         };
         const responseNewDoc = await axios.patch("http://localhost:3000/blog/docs/" + auxDocId, formTitle, config);
-        setFormTitle(prev => ({...prev, text: '' }));
+        setFormTitle(prev => ({ ...prev, text: '' }));
         dispatch(setBlogData([]));
       }
       setEditTitle(!editTitle);
@@ -271,7 +272,7 @@ function EditBlog() {
           headers: { Authorization: `Bearer ${getCookie('token')}` }
         };
         const responseNewDoc = await axios.patch("http://localhost:3000/blog/docs/" + auxDocId, formText, config);
-        setFormText(prev => ({...prev, text: '' }));
+        setFormText(prev => ({ ...prev, text: '' }));
         dispatch(setBlogData([]));
       }
       setEditText(!editText);
@@ -311,7 +312,7 @@ function EditBlog() {
           headers: { Authorization: `Bearer ${getCookie('token')}` }
         };
         const responseNewDoc = await axios.patch("http://localhost:3000/blog/docs/" + auxDocId, formImage, config);
-        setFormImage(prev => ({...prev, image: null }));
+        setFormImage(prev => ({ ...prev, image: null }));
         console.log(formImage);
         dispatch(setBlogData([]));
       }
@@ -322,6 +323,26 @@ function EditBlog() {
     }
 
   }
+
+  async function handleSubmitDeleteDocument(event: React.MouseEvent<HTMLButtonElement>, id: number) {
+    event.preventDefault();
+    // ...Enviar formulario
+    try {
+      if (getCookie('token')) {
+        const config = {
+          headers: { Authorization: `Bearer ${getCookie('token')}` }
+        };
+
+        const responseNewDoc = await axios.delete("http://localhost:3000/blog/docs/" + id, config);
+        dispatch(setBlogData([]));
+      }
+    } catch (error) {
+      console.log(error)
+      return;
+    }
+
+  }
+
 
   return (
     <React.Fragment>
@@ -473,7 +494,7 @@ function EditBlog() {
                         </button>
                         <button
                           type="button"
-
+                          onClick={(even) =>  handleSubmitDeleteDocument(even,doc.id) }
                           className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                           Delete
@@ -538,7 +559,7 @@ function EditBlog() {
                             </button>
                             <button
                               type="button"
-
+                              onClick={(even) =>  handleSubmitDeleteDocument(even,doc.id) }
                               className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                               Delete
@@ -617,7 +638,7 @@ function EditBlog() {
                               </button>
                               <button
                                 type="button"
-
+                                onClick={(even) =>  handleSubmitDeleteDocument(even,doc.id) }
                                 className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                               >
                                 Delete

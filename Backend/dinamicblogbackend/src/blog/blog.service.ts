@@ -85,6 +85,7 @@ export class BlogService {
         'id',
         'title',
         'description',
+        'date',
         'state',
         'profileId',
         'url',

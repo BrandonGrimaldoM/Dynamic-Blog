@@ -16,6 +16,9 @@ import {
 import { Menu, Transition } from '@headlessui/react';
 import { useSelector, useDispatch} from "react-redux";
 import { setCurrenlyBlogData } from "../reducers/currenly-blog-reducer";
+import { getCookie } from 'cookies-next';
+import { setBlogData } from "../reducers/blog-reducer";
+import axios from 'axios';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -67,6 +70,25 @@ function BlogEditer() {
       setProfileLastName(profileData.profile.last_name);
     }
   }, [blogData, profileData])
+
+  async function handleSubmitDeleteBlog(event: React.MouseEvent<HTMLButtonElement>, id: number) {
+    event.preventDefault();
+    // ...Enviar formulario
+    try {
+      if (getCookie('token')) {
+        const config = {
+          headers: { Authorization: `Bearer ${getCookie('token')}` }
+        };
+
+        const responseNewDoc = await axios.delete("http://localhost:3000/blog/" + id, config);
+        dispatch(setBlogData([]));
+      }
+    } catch (error) {
+      console.log(error)
+      return;
+    }
+
+  }
 
   return (
     <React.Fragment>
@@ -134,6 +156,7 @@ function BlogEditer() {
                   <button
                     type="button"
                     className="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                    onClick={(even) =>  handleSubmitDeleteBlog(even,blog.id) }
                   >
                     <XMarkIcon className="-ml-0.5 mr-0.2 h-5 w-5" aria-hidden="true" />
 

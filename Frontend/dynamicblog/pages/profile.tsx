@@ -2,13 +2,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
 import React, { useEffect, useState } from "react";
-import { getCookie, setCookie } from 'cookies-next';
+import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 import { NextPageContext } from 'next';
 import axios from 'axios';
 import { useSelector, useDispatch } from "react-redux";
 import { setProfileData } from "../reducers/profile-reducer";
-
-
+import { setBlogData } from "../reducers/blog-reducer";
+import { useRouter } from 'next/router';
 
 function Profile() {
 
@@ -17,13 +17,13 @@ function Profile() {
   const [email, setEmail] = useState("");
   const [user, setUser] = useState("");
   const [profileid, setProfileid] = useState("");
-  const [userid, setUserid] = useState("");
+  const [userid, setUserid] = useState(0);
 
 
 
   const profileData = useSelector((state: any) => state.profile);
   const dispatch = useDispatch();
-
+  const router = useRouter()
 
 
 
@@ -125,6 +125,28 @@ function Profile() {
 
   }
 
+  async function handleSubmitDeleteUser(event: React.MouseEvent<HTMLButtonElement>, id: number) {
+    event.preventDefault();
+    // ...Enviar formulario
+    try {
+      if (getCookie('token')) {
+        const config = {
+          headers: { Authorization: `Bearer ${getCookie('token')}` }
+        };
+
+        const responseNewDoc = await axios.delete("http://localhost:3000/login/" + id, config);
+        dispatch(setProfileData([]))
+        dispatch(setBlogData([]))
+        deleteCookie('token')
+        deleteCookie('user')
+        router.push('/')
+      }
+    } catch (error) {
+      console.log(error)
+      return;
+    }
+
+  }
 
   return (
     <React.Fragment>
@@ -139,7 +161,7 @@ function Profile() {
                 </p>
                 <button
                   type="button"
-
+                  onClick={(even) => handleSubmitDeleteUser(even, userid)}
                   className="mt-5 block w-auto rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   Delete profile
