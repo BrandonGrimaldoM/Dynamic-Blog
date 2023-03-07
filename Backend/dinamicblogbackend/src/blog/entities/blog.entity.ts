@@ -112,6 +112,9 @@ export class DocumentEntity {
   @Column({ type: 'longblob', nullable: true })
   image: Buffer;
 
+  @Column({ type: 'longtext', nullable: true })
+  url: string;
+
   @Column({ name: 'blog_id', nullable: false })
   blogId: number;
 

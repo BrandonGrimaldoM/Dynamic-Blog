@@ -19,7 +19,7 @@ function Profile() {
   const [profileid, setProfileid] = useState("");
   const [userid, setUserid] = useState("");
 
- 
+
 
   const profileData = useSelector((state: any) => state.profile);
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ function Profile() {
 
 
   useEffect(() => {
-    if(profileData.length !== 0){
+    if (profileData.length !== 0) {
       setFirstName(profileData.profile.first_name);
       setLastName(profileData.profile.last_name);
       setEmail(profileData.profile.email);
@@ -39,7 +39,7 @@ function Profile() {
 
   }, [profileData])
 
-  
+
 
   const [formData, setFormData] = useState({
     first_name: '',
@@ -56,7 +56,7 @@ function Profile() {
     password: '',
   });
 
-  
+
   function fileToBuffer(file: File): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -71,22 +71,22 @@ function Profile() {
       reader.readAsArrayBuffer(file);
     });
   }
-  
+
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let { name, value, files } = event.target;
-    if(name === "avatar" && files !== null && event.target.files !== null){
+    if (name === "avatar" && files !== null && event.target.files !== null) {
       console.log("soy avatar");
       const file = event.target.files[0];
       fileToBuffer(file)
-      .then((buffer) => {
-        console.log(buffer)
-        setFormData((prevState) => ({ ...prevState, [name]: buffer }));
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    }else{
+        .then((buffer) => {
+          console.log(buffer)
+          setFormData((prevState) => ({ ...prevState, [name]: buffer }));
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
       setFormData(prevState => ({ ...prevState, [name]: value }));
     }
     console.log(formData);
@@ -137,6 +137,13 @@ function Profile() {
                 <p className="mt-1 text-sm text-gray-600">
                   This information will be displayed publicly so be careful what you share.
                 </p>
+                <button
+                  type="button"
+
+                  className="mt-5 block w-auto rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Delete profile
+                </button>
               </div>
             </div>
             <div className="mt-5 md:col-span-2 md:mt-0">

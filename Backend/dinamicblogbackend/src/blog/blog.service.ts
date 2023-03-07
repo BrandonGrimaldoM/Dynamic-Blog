@@ -66,6 +66,14 @@ export class BlogService {
     const document = new DocumentEntity();
     document.text = createDoDto.text;
     document.html = createDoDto.html;
+    if (createDoDto.image != null) {
+      document.image = Buffer.from(createDoDto.image);
+      const imagen: any = Buffer.from(createDoDto.image);
+      const imagenBuffer = Buffer.from(imagen, 'binary');
+      const base64Image = imagenBuffer.toString('base64');
+      const img = `data:image/jpeg;base64,${base64Image}`;
+      document.url = img;
+    }
     document.blogId = id.id;
     return this.documentRepository.save(document);
   }
@@ -117,6 +125,15 @@ export class BlogService {
 
     if (updateBlogDto.description !== '') {
       blog.description = updateBlogDto.description;
+    }
+
+    if (updateBlogDto.image != null) {
+      blog.image = Buffer.from(updateBlogDto.image);
+      const imagen: any = Buffer.from(updateBlogDto.image);
+      const imagenBuffer = Buffer.from(imagen, 'binary');
+      const base64Image = imagenBuffer.toString('base64');
+      const img = `data:image/jpeg;base64,${base64Image}`;
+      blog.url = img;
     }
 
     blog.state = updateBlogDto.state;

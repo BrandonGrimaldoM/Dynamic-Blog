@@ -11,4 +11,6 @@ export class CreateDocDto {
   @IsNotEmpty()
   @IsNumber()
   blogId: number;
+
+  image: Buffer;
 }

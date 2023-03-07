@@ -109,6 +109,7 @@ function BlogEditer() {
                 </span>
 
                 <span className="ml-3 hidden sm:block">
+                  <Link href={"/blog/"+ blog.title}>
                   <button
                     type="button"
                     className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
@@ -116,6 +117,7 @@ function BlogEditer() {
                     <LinkIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                     View
                   </button>
+                  </Link>
                 </span>
 
                 <span className="sm:ml-3">

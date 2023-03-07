@@ -23,6 +23,7 @@ function EditBlog() {
   const [edited, setEdited] = useState(false);
   const [newText, setNewText] = useState(false);
   const [newDesc, setNewDesc] = useState(false);
+  const [newImage, setNewImage] = useState(false);
 
 
 
@@ -43,6 +44,7 @@ function EditBlog() {
     html: string;
     text: string;
     image?: any;
+    url?: any;
     blogId: number;
   }
 
@@ -73,7 +75,7 @@ function EditBlog() {
     setDescription(blogs.filter((item) => item.id === currenlyBlog).map((blog) => blog.description).toString())
     setDocument(blogs.filter((item) => item.id === currenlyBlog).map((blog) => blog));
 
-    setFormData(prevState => ({ title: title, description: description }));
+    setFormData(prevState => ({ title: title, description: description, image: null }));
 
   }, [blogs, blogData])
 
@@ -81,6 +83,7 @@ function EditBlog() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    image: null,
   });
 
   const [formTitle, setFormTitle] = useState({
@@ -95,10 +98,45 @@ function EditBlog() {
     blogId: currenlyBlog,
   });
 
+  const [formImage, setFormImage] = useState({
+    html: 'img',
+    image: null,
+    blogId: currenlyBlog,
+  });
+
+
+  function fileToBuffer(file: File): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const buffer = Buffer.from(arrayBuffer);
+        resolve(buffer);
+      };
+      reader.onerror = () => {
+        reject(new Error('Error reading file'));
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData(prevState => ({ ...prevState, [name]: value }));
+    const { name, value, files } = event.target;
+    if (name === "images" && files !== null && event.target.files !== null) {
+      console.log("soy avatar");
+      const file = event.target.files[0];
+      fileToBuffer(file)
+        .then((buffer) => {
+          console.log(buffer)
+          setFormData((prevState: any) => ({ ...prevState, image: buffer }));
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+
+      setFormData(prevState => ({ ...prevState, [name]: value }));
+    }
   }
   const handleChangeDesc = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -113,6 +151,22 @@ function EditBlog() {
   const handleChangeText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setFormText(prevFormText => ({ ...prevFormText, [name]: value }));
+  }
+
+  const handleChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, files } = event.target;
+    if (name === "docimages" && files !== null && event.target.files !== null) {
+      console.log("soy imagensita");
+      const file = event.target.files[0];
+      fileToBuffer(file)
+        .then((bufferdoc) => {
+          console.log(bufferdoc)
+          setFormImage((prevFormImage: any) => ({ ...prevFormImage, image: bufferdoc }));
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   }
 
 
@@ -182,6 +236,26 @@ function EditBlog() {
 
   }
 
+  async function handleSubmitImage(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    // ...Enviar formulario
+    try {
+      if (getCookie('token')) {
+        const config = {
+          headers: { Authorization: `Bearer ${getCookie('token')}` }
+        };
+        const responseNewDoc = await axios.post("http://localhost:3000/blog/docs", formImage, config);
+        console.log(formImage);
+        dispatch(setBlogData([]));
+      }
+      setNewImage(!newImage)
+    } catch (error) {
+      console.log(error)
+      return;
+    }
+
+  }
+
   return (
     <React.Fragment>
       <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6">
@@ -224,6 +298,39 @@ function EditBlog() {
             </div>
 
           </div>
+          <label htmlFor="message" className="my-5 block text-sm font-semibold leading-6 text-gray-900">
+            Cover image
+          </label>
+          <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+
+            <div className="space-y-1 text-center">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 48 48"
+                aria-hidden="true"
+              >
+                <path
+                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <div className="flex text-sm text-gray-600">
+                <label
+                  htmlFor="file-upload"
+                  className="relative cursor-pointer rounded-md bg-white font-medium text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 hover:text-blue-500"
+                >
+                  <span>Upload a file</span>
+                  <input id="file-upload" name="images" type="file" className="sr-only" onChange={handleChange} />
+                </label>
+                <p className="pl-1">or drag and drop</p>
+              </div>
+              <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+            </div>
+          </div>
           <div className="mt-10">
             {
               edited ?
@@ -244,14 +351,83 @@ function EditBlog() {
         </form>
         <div className="border-b border-black">
 
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-center mb-5 mt-5 pt-5">Edit document</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-center mb-5 mt-5 pt-5">Edit document</h2>
         </div>
 
         {documents.map((rootObject) => {
           return rootObject.documents.map((doc) => {
             return (
-              doc.html === "h2" ? <h2 key={doc.id} className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl text-left mb-5 mt-5 pt-5">{doc.text}</h2> :
-                doc.html === "p" ? <p key={doc.id}>{doc.text}</p> : null
+              doc.html === "h2" ?
+                <div className="border-2 border-neutral-400 p-2 border-dotted">
+                  <h2 key={doc.id} className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl text-left mb-5 mt-5 pt-5">{doc.text}</h2>
+                  <div className="flex">
+                    <button
+                      type="button"
+
+                      className="mr-5 block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+
+                      className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+
+
+                :
+
+
+                doc.html === "p" ?
+                  <div className="border-2 border-neutral-400 p-2 border-dotted">
+                    <p key={doc.id}>{doc.text}</p>
+                    <div className="flex">
+                      <button
+                        type="button"
+
+                        className="mr-5 block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+
+                        className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                  :
+
+
+                  doc.html === "img" ?
+
+                    <div className="border-2 border-neutral-400 p-2 border-dotted">
+                      <img key={doc.id} src={doc.url} alt="Simple image blog" className="bg-cover w-full h-auto my-5" />
+                      <div className="flex">
+                        <button
+                          type="button"
+
+                          className="mr-5 block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+
+                          className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+
+                    : null
             )
           })
         })}
@@ -317,7 +493,51 @@ function EditBlog() {
             }
 
             {
-              newText || newDesc ? <div className="hidden"></div> :
+              newImage ? <div className="sm:col-span-2">
+                <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+
+                  <div className="space-y-1 text-center">
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      stroke="currentColor"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="file-upload2"
+                        className="relative cursor-pointer rounded-md bg-white font-medium text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 hover:text-blue-500"
+                      >
+                        <span>Upload a file</span>
+                        <input id="file-upload2" name="docimages" type="file" className="sr-only" onChange={handleChangeImage} />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                  </div>
+                </div>
+                <br></br>
+                <button
+                  type="button"
+                  onClick={handleSubmitImage}
+                  className="block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Save
+                </button>
+
+              </div> : <div className="hidden"></div>
+            }
+
+            {
+              newText || newDesc || newImage ? <div className="hidden"></div> :
                 <button
                   type="button"
                   onClick={() => setNewText(!newText)}
@@ -328,7 +548,7 @@ function EditBlog() {
             }
 
             {
-              newText || newDesc ? <div className="hidden"></div> :
+              newText || newDesc || newImage ? <div className="hidden"></div> :
                 <button
                   type="button"
                   onClick={() => setNewDesc(!newDesc)}
@@ -340,9 +560,10 @@ function EditBlog() {
             }
 
             {
-              newText || newDesc ? <div className="hidden"></div> :
+              newText || newDesc || newImage ? <div className="hidden"></div> :
                 <button
                   type="button"
+                  onClick={() => setNewImage(!newImage)}
                   className="block w-full rounded-md bg-blue-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   Add Image
@@ -356,23 +577,7 @@ function EditBlog() {
 
 
           </div>
-          <div className="mt-10">
-            {
-              edited ?
-                <button
-                  type="submit"
-                  className="block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Edited
-                </button> :
-                <button onClick={handleEdit}
-                  type="submit"
-                  className="block w-full rounded-md bg-blue-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Edit basic info
-                </button>
-            }
-          </div>
+
         </form>
 
       </div>
