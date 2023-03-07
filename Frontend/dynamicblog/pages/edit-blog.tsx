@@ -25,6 +25,12 @@ function EditBlog() {
   const [newDesc, setNewDesc] = useState(false);
   const [newImage, setNewImage] = useState(false);
 
+  const [editTitle, setEditTitle] = useState(false);
+  const [editText, setEditText] = useState(false);
+  const [editImage, setEditImage] = useState(false);
+  const [auxDocId, setauxDocId] = useState(0);
+
+
 
 
   interface RootObject {
@@ -216,6 +222,26 @@ function EditBlog() {
 
   }
 
+  async function handleSubmitUpdateTitle(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    // ...Enviar formulario
+    try {
+      if (getCookie('token')) {
+        const config = {
+          headers: { Authorization: `Bearer ${getCookie('token')}` }
+        };
+        const responseNewDoc = await axios.patch("http://localhost:3000/blog/docs/" + auxDocId, formTitle, config);
+        setFormTitle(prev => ({...prev, text: '' }));
+        dispatch(setBlogData([]));
+      }
+      setEditTitle(!editTitle);
+    } catch (error) {
+      console.log(error)
+      return;
+    }
+
+  }
+
   async function handleSubmitP(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     // ...Enviar formulario
@@ -228,7 +254,27 @@ function EditBlog() {
 
         dispatch(setBlogData([]));
       }
-      setNewDesc(!newDesc)
+      setNewDesc(!newDesc);
+    } catch (error) {
+      console.log(error)
+      return;
+    }
+
+  }
+
+  async function handleSubmitUpdateText(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    // ...Enviar formulario
+    try {
+      if (getCookie('token')) {
+        const config = {
+          headers: { Authorization: `Bearer ${getCookie('token')}` }
+        };
+        const responseNewDoc = await axios.patch("http://localhost:3000/blog/docs/" + auxDocId, formText, config);
+        setFormText(prev => ({...prev, text: '' }));
+        dispatch(setBlogData([]));
+      }
+      setEditText(!editText);
     } catch (error) {
       console.log(error)
       return;
@@ -249,6 +295,27 @@ function EditBlog() {
         dispatch(setBlogData([]));
       }
       setNewImage(!newImage)
+    } catch (error) {
+      console.log(error)
+      return;
+    }
+
+  }
+
+  async function handleSubmitUpdateImage(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    // ...Enviar formulario
+    try {
+      if (getCookie('token')) {
+        const config = {
+          headers: { Authorization: `Bearer ${getCookie('token')}` }
+        };
+        const responseNewDoc = await axios.patch("http://localhost:3000/blog/docs/" + auxDocId, formImage, config);
+        setFormImage(prev => ({...prev, image: null }));
+        console.log(formImage);
+        dispatch(setBlogData([]));
+      }
+      setEditImage(!editImage)
     } catch (error) {
       console.log(error)
       return;
@@ -357,63 +424,50 @@ function EditBlog() {
         {documents.map((rootObject) => {
           return rootObject.documents.map((doc) => {
             return (
+
               doc.html === "h2" ?
-                <div className="border-2 border-neutral-400 p-2 border-dotted">
-                  <h2 key={doc.id} className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl text-left mb-5 mt-5 pt-5">{doc.text}</h2>
-                  <div className="flex">
-                    <button
-                      type="button"
 
-                      className="mr-5 block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
+                (editTitle && auxDocId === doc.id ?
+                  <div>
 
-                      className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-
-
-                :
-
-
-                doc.html === "p" ?
-                  <div className="border-2 border-neutral-400 p-2 border-dotted">
-                    <p key={doc.id}>{doc.text}</p>
-                    <div className="flex">
+                    <div className="sm:col-span-2 border-2 border-green-400 p-2 border-dotted">
+                      <label htmlFor="text" className="block text-sm font-semibold leading-6 text-gray-900">
+                        Title
+                      </label>
+                      <div className="mt-2.5">
+                        <input
+                          type="text"
+                          name="text"
+                          id="title"
+                          autoComplete="on"
+                          className="block w-full rounded-md border-0 py-2 px-3.5 text-sm leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+                          defaultValue={doc.text}
+                          onChange={handleChangeTitle}
+                        />
+                      </div>
+                      <br></br>
                       <button
                         type="button"
-
-                        className="mr-5 block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        onClick={handleSubmitUpdateTitle}
+                        className="block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       >
-                        Edit
+                        Save
                       </button>
-                      <button
-                        type="button"
 
-                        className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                      >
-                        Delete
-                      </button>
                     </div>
+                    <br />
                   </div>
+
                   :
-
-
-                  doc.html === "img" ?
+                  <div>
 
                     <div className="border-2 border-neutral-400 p-2 border-dotted">
-                      <img key={doc.id} src={doc.url} alt="Simple image blog" className="bg-cover w-full h-auto my-5" />
+                      <h2 key={doc.id} className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl text-left mb-5 mt-5 pt-5">{doc.text}</h2>
                       <div className="flex">
                         <button
                           type="button"
-
-                          className="mr-5 block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                          onClick={() => { setEditTitle(!editTitle), setauxDocId(doc.id) }}
+                          className="mr-5 block w-full rounded-md bg-blue-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                           Edit
                         </button>
@@ -426,7 +480,153 @@ function EditBlog() {
                         </button>
                       </div>
                     </div>
+                    <br />
+                  </div>
+                )
 
+                :
+
+
+                doc.html === "p" ?
+
+                  (
+                    editText && auxDocId === doc.id ?
+                      <div>
+
+                        <div className="sm:col-span-2">
+                          <div className="sm:col-span-2">
+                            <label htmlFor="message" className="block text-sm font-semibold leading-6 text-gray-900">
+                              Text
+                            </label>
+                            <div className="mt-2.5">
+                              <textarea
+                                name="text"
+                                id="texts"
+                                rows={4}
+                                className="block w-full rounded-md border-0 py-2 px-3.5 text-sm leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+                                onChange={handleChangeText}
+                                defaultValue={doc.text}
+                              />
+                            </div>
+                          </div>
+                          <br></br>
+                          <button
+                            type="button"
+                            onClick={handleSubmitUpdateText}
+                            className="block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                          >
+                            Save
+                          </button>
+
+                        </div>
+                        <br />
+                      </div>
+
+
+                      :
+                      <div>
+
+                        <div className="border-2 border-neutral-400 p-2 border-dotted">
+                          <p key={doc.id}>{doc.text}</p>
+                          <div className="flex">
+                            <button
+                              type="button"
+                              onClick={() => { setEditText(!editText), setauxDocId(doc.id) }}
+                              className="mr-5 block w-full rounded-md bg-blue-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+
+                              className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                        <br />
+                      </div>
+                  )
+                  :
+
+
+                  doc.html === "img" ?
+                    (
+
+                      editImage && auxDocId === doc.id ?
+
+                        <div>
+
+                          <div className="sm:col-span-2">
+                            <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+
+                              <div className="space-y-1 text-center">
+                                <svg
+                                  className="mx-auto h-12 w-12 text-gray-400"
+                                  stroke="currentColor"
+                                  fill="none"
+                                  viewBox="0 0 48 48"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                    strokeWidth={2}
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                                <div className="flex text-sm text-gray-600">
+                                  <label
+                                    htmlFor="file-upload3"
+                                    className="relative cursor-pointer rounded-md bg-white font-medium text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 hover:text-blue-500"
+                                  >
+                                    <span>Upload a file</span>
+                                    <input id="file-upload3" name="docimages" type="file" className="sr-only" onChange={handleChangeImage} />
+                                  </label>
+                                  <p className="pl-1">or drag and drop</p>
+                                </div>
+                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                              </div>
+                            </div>
+                            <br></br>
+                            <button
+                              type="button"
+                              onClick={handleSubmitUpdateImage}
+                              className="block w-full rounded-md bg-green-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            >
+                              Save
+                            </button>
+
+                          </div>
+                          <br />
+                        </div>
+                        :
+
+                        <div>
+
+                          <div className="border-2 border-neutral-400 p-2 border-dotted">
+                            <img key={doc.id} src={doc.url} alt="Simple image blog" className="bg-cover w-full h-auto my-5" />
+                            <div className="flex">
+                              <button
+                                type="button"
+                                onClick={() => { setEditImage(!editImage), setauxDocId(doc.id) }}
+                                className="mr-5 block w-full rounded-md bg-blue-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+
+                                className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                          <br />
+                        </div>
+                    )
                     : null
             )
           })

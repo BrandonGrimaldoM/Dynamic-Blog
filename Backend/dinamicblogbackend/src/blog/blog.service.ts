@@ -149,8 +149,17 @@ export class BlogService {
       throw new NotFoundException(`Login with id ${id} not found`);
     }
 
-    document.html = updateDocDto.html;
-    document.text = updateDocDto.text;
+    if (updateDocDto.text !== '') {
+      document.text = updateDocDto.text;
+    }
+    if (updateDocDto.image != null) {
+      document.image = Buffer.from(updateDocDto.image);
+      const imagen: any = Buffer.from(updateDocDto.image);
+      const imagenBuffer = Buffer.from(imagen, 'binary');
+      const base64Image = imagenBuffer.toString('base64');
+      const img = `data:image/jpeg;base64,${base64Image}`;
+      document.url = img;
+    }
 
     await this.documentRepository.save(document);
 

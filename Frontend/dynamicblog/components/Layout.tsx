@@ -8,7 +8,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
 import Link from 'next/link';
-import { getCookie, deleteCookie } from 'cookies-next';
+import { getCookie, deleteCookie, CookieValueTypes } from 'cookies-next';
 import { useSelector, useDispatch } from "react-redux";
 import { setProfileData } from '@/reducers/profile-reducer';
 import { setBlogData } from '@/reducers/blog-reducer';
@@ -29,6 +29,7 @@ const Layout = ({ children }: Props) => {
   const [blogState, setBlogState] = useState(false);
   const [contactState, setContactState] = useState(false);
   const [loginToken, setLoginToken] = useState(false);
+  const [userName, setUserName] = useState<CookieValueTypes>();
   const profileData = useSelector((state: any) => state.profile);
   const blogData = useSelector((state: any) => state.blog);
   const dispatch = useDispatch();
@@ -56,12 +57,15 @@ const Layout = ({ children }: Props) => {
   useEffect(() => {
     if (getCookie('token')) {
       setLoginToken(true);
+      setUserName(getCookie('user'))
       if (profileData.length === 0) {
         loginVerification();
+
       }
     } else {
       setLoginToken(false);
     }
+
   }, [profileData])
 
 
@@ -150,20 +154,26 @@ const Layout = ({ children }: Props) => {
                     </div>
                   </div>
                 </div>
+                {
+                  loginToken ?
+                    <p className='font-bold text-base text-white max-sm:hidden'>{userName}</p> : null
+                }
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                   {/* Profile dropdown */}
                   {loginToken ? (
+
                     <Menu as="div" className="relative ml-3">
                       <div>
                         <Menu.Button className="flex rounded-full bg-blue-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-800">
                           <span className="sr-only">Open user menu</span>
                           <img
-                            className="h-8 w-8 rounded-full"
-                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR23EZUFSx997R8J4UMU0cXDfDlQ0CicAGESQVIJANw&s"
+                            className="h-8 w-8 rounded-full object-cover"
+                            src={profileData.avatarImg ? profileData.avatarImg : "https://img.freepik.com/foto-gratis/muro-hormigon-blanco_53876-92803.jpg?w=1380&t=st=1678205278~exp=1678205878~hmac=001ba4c588856c41e36e5c9396556a021b49d881174e34534263b54a3deed10c"}
                             alt="User"
                           />
                         </Menu.Button>
                       </div>
+
                       <Transition
                         as={Fragment}
                         enter="transition ease-out duration-100"

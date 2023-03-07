@@ -156,7 +156,7 @@ function Profile() {
                       <div className="mt-1 flex items-center">
                         <span className="inline-block h-25 w-25 overflow-hidden rounded-full bg-gray-100 bg-cover">
                           <img
-                            src={profileData.avatarImg}
+                            src={profileData.avatarImg ? profileData.avatarImg : "https://img.freepik.com/foto-gratis/muro-hormigon-blanco_53876-92803.jpg?w=1380&t=st=1678205278~exp=1678205878~hmac=001ba4c588856c41e36e5c9396556a021b49d881174e34534263b54a3deed10c"}
                             className="mx-auto h-full w-full text-gray-400"
                             alt="avatar"
                           />
