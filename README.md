@@ -14,6 +14,8 @@ This project was created using:
 * JWT
 * MySql
 
+[![Alt text](https://img.youtube.com/vi/-N-3uhonBPY/0.jpg)](https://youtu.be/-N-3uhonBPY)
+
 ## Backend
 
 Once the repository is downloaded you first need to make sure you have node.js and docker installed, once you are in the backend folder do the following, before executing the backend or the frontend you must execute the command to install all the necessary dependencies.
