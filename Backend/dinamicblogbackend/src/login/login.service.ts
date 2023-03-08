@@ -40,14 +40,13 @@ export class LoginService {
       email,
     });
 
-    await this.profileRepository.save(profile); // guardar ProfileEntity en la BD para obtener el ID generado
-    //contra
+    await this.profileRepository.save(profile);
     const hash = await bcrypt.hash(password, 10);
 
     const login = this.loginRepository.create({
       user,
       password,
-      profileId: profile.id, // asignar el ID generado al LoginEntity
+      profileId: profile.id,
     });
 
     login.password = hash;
@@ -55,14 +54,6 @@ export class LoginService {
     await this.loginRepository.save(login);
 
     return { profile, user: login.user };
-  }
-
-  async findAll() {
-    return `This action returns login`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} login`;
   }
 
   async findByUsername(user: string): Promise<LoginEntity> {

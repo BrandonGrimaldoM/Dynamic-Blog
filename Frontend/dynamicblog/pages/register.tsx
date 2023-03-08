@@ -26,7 +26,7 @@ function Register() {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         setFormData(prevState => ({ ...prevState, [name]: value }));
-      }
+    }
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -43,22 +43,19 @@ function Register() {
             if (passwordError) {
                 passwordError.innerText = "Passwords do not match";
                 setTimeout(() => {
-                    passwordError.innerText ="";
+                    passwordError.innerText = "";
                 }, 5000);
-              }
+            }
             return;
         }
 
 
-
-        // ...Enviar formulario
         try {
             const response = await axios.post('http://localhost:3000/login', formData);
-            
-            // redirect to login page
+
         } catch (error) {
             alert("Empty fields or username occupied");
-        
+
             return;
         }
 
@@ -69,15 +66,15 @@ function Register() {
         <React.Fragment>
             <div className="isolate bg-white py-24 px-6 sm:py-32 lg:px-8">
                 <Link href="/">
-                
-                <div className="flex items-center justify-center mx-auto max-w-2xl text-center">
-                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Sign up</h2>
-                    <img
-                        className="block h-8 w-auto ml-5 translate-y-1"
-                        src="/images/icon-blog.svg"
-                        alt="Dynamic Blog"
-                    />
-                </div>
+
+                    <div className="flex items-center justify-center mx-auto max-w-2xl text-center">
+                        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Sign up</h2>
+                        <img
+                            className="block h-8 w-auto ml-5 translate-y-1"
+                            src="/images/icon-blog.svg"
+                            alt="Dynamic Blog"
+                        />
+                    </div>
                 </Link>
                 <form onSubmit={handleSubmit} method="POST" className="mx-auto mt-16 max-w-xl sm:mt-20">
                     <div className="grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-2">
@@ -191,23 +188,18 @@ function Register() {
 
 export async function getServerSideProps(context: NextPageContext) {
     const { req, res } = context;
-  
-    // Verificar si la cookie existe
     const token = getCookie('token') ? true : false;
-  
-    if (!token) {
-      // Si la cookie no existe, redirigir al usuario a la página de inicio de sesión
-      if (res) {
-        res.writeHead(302, { Location: '/' });
-        res.end();
-      } else {
-        // Si se ejecuta en el lado del cliente, redirigir utilizando la API del navegador
-        window.location.href = '/';
-      }
-    }
-  
-    // Si la cookie existe, continuar con la renderización de la página
-    return { props: {} };
-  }
 
+    if (!token) {
+
+        if (res) {
+            res.writeHead(302, { Location: '/' });
+            res.end();
+        } else {
+
+            window.location.href = '/';
+        }
+    }
+    return { props: {} };
+}
 export default Register;

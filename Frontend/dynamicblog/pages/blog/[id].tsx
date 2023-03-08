@@ -41,18 +41,11 @@ const Post = () => {
   const [blogs, setBlog] = useState<RootObject[]>([]);
   const blogData = useSelector((state: any) => state.blog);
 
-
   useEffect(() => {
 
     setBlog(blogData.filter((item: { title: string; }) => item.title === id).map((blog: RootObject[]) => blog));
 
-    if (blogs.length === 0) {
-      console.log("no")
-    }
-
   }, [id])
-
-
 
   return (
     <React.Fragment>
@@ -72,6 +65,12 @@ const Post = () => {
             )
           })
         })}
+        {blogs.map((profile) => (
+          profile ?
+          <p key={profile.id} className="font-bold text-black">Created by { profile.profile.first_name + " " + profile.profile.last_name }</p> : null
+        ))
+        }
+        
       </div>
     </React.Fragment>
   )

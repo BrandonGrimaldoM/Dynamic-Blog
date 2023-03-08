@@ -7,21 +7,20 @@ import axios from 'axios';
 import { useRouter } from "next/router";
 import { NextPageContext } from 'next';
 
-function classNames(...classes: any[]) {
-  return classes.filter(Boolean).join(' ')
-}
+
 function CreateBlog() {
   const profileData = useSelector((state: any) => state.profile);
   const blogData = useSelector((state: any) => state.blog);
   const dispatch = useDispatch();
   const router = useRouter();
+  const [fileName, setFileName] = useState("");
 
   const [formData, setFormData] = useState({
 
   });
 
   useEffect(() => {
-    if(profileData.length !== 0){
+    if (profileData.length !== 0) {
       setFormData({
         title: '',
         description: '',
@@ -53,11 +52,10 @@ function CreateBlog() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = event.target;
     if (name === "images" && files !== null && event.target.files !== null) {
-      console.log("soy avatar");
       const file = event.target.files[0];
+      setFileName(file.name);
       fileToBuffer(file)
         .then((buffer) => {
-          console.log(buffer)
           setFormData((prevState: any) => ({ ...prevState, image: buffer }));
         })
         .catch((error) => {
@@ -76,21 +74,17 @@ function CreateBlog() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-
-    // ...Enviar formulario
     try {
       if (getCookie('token')) {
         const config = {
           headers: { Authorization: `Bearer ${getCookie('token')}` }
         };
 
-
         const responseNewPost = await axios.post('http://localhost:3000/blog', formData, config);
         dispatch(setBlogData([]));
         router.push('blog-editer')
       }
 
-      // redirect to login page
     } catch (error) {
       console.log(error)
 
@@ -172,6 +166,7 @@ function CreateBlog() {
               <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
             </div>
           </div>
+          <p className="text-green-500 font-bold truncate text-center">{fileName}</p>
           <div className="mt-10">
             <button
               type="submit"
@@ -188,22 +183,19 @@ function CreateBlog() {
 
 export async function getServerSideProps(context: NextPageContext) {
   const { req, res } = context;
-
-  // Verificar si la cookie existe
   const token = getCookie('token') ? true : false;
 
   if (!token) {
-    // Si la cookie no existe, redirigir al usuario a la página de inicio de sesión
+
     if (res) {
       res.writeHead(302, { Location: '/' });
       res.end();
     } else {
-      // Si se ejecuta en el lado del cliente, redirigir utilizando la API del navegador
+
       window.location.href = '/';
     }
   }
 
-  // Si la cookie existe, continuar con la renderización de la página
   return { props: {} };
 }
 

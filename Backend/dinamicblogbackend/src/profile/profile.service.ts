@@ -5,10 +5,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { LoginEntity, ProfileEntity } from 'src/blog/entities/blog.entity';
-import * as fs from 'fs';
 
 @Injectable()
 export class ProfileService {
@@ -18,10 +16,6 @@ export class ProfileService {
     @InjectRepository(LoginEntity)
     private readonly loginRepository: Repository<LoginEntity>,
   ) {}
-
-  create(createProfileDto: CreateProfileDto) {
-    return 'This action adds a new profile';
-  }
 
   async findAll(): Promise<ProfileEntity[]> {
     return this.profileRepository.find();
@@ -59,7 +53,7 @@ export class ProfileService {
   async update(id: number, updateProfileDto: UpdateProfileDto) {
     const profile = await this.profileRepository.findOne({ where: { id } });
     if (!profile) {
-      throw new NotFoundException(`Login with id ${id} not found`);
+      throw new NotFoundException(`Profile with id ${id} not found`);
     }
     const emailRegex = /^\S+@\S+\.\S+$/;
     if (updateProfileDto.email != '') {
@@ -85,9 +79,5 @@ export class ProfileService {
     await this.profileRepository.save(profile);
 
     return profile;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
   }
 }

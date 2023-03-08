@@ -1,8 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { createSlice } from "@reduxjs/toolkit";
 
-
-
 export const profileInfo = createSlice({
   name: "profile",
   initialState: [],

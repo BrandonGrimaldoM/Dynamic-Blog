@@ -1,8 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { createSlice } from "@reduxjs/toolkit";
 
-
-
 export const paginationBlog = createSlice({
   name: "pagination",
   initialState: [] ,
@@ -12,8 +10,6 @@ export const paginationBlog = createSlice({
     },
   },
 });
-
-
 
 export const { setPaginationData } = paginationBlog.actions;
 

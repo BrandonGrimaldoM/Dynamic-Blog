@@ -18,14 +18,11 @@ function Profile() {
   const [user, setUser] = useState("");
   const [profileid, setProfileid] = useState("");
   const [userid, setUserid] = useState(0);
-
-
+  const [fileName, setFileName] = useState("");
 
   const profileData = useSelector((state: any) => state.profile);
   const dispatch = useDispatch();
   const router = useRouter()
-
-
 
   useEffect(() => {
     if (profileData.length !== 0) {
@@ -39,8 +36,6 @@ function Profile() {
 
   }, [profileData])
 
-
-
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -48,14 +43,10 @@ function Profile() {
     avatar: null,
   });
 
-
-
-
   const [formDataUser, setFormDataUser] = useState({
     user: '',
     password: '',
   });
-
 
   function fileToBuffer(file: File): Promise<Buffer> {
     return new Promise((resolve, reject) => {
@@ -76,11 +67,10 @@ function Profile() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let { name, value, files } = event.target;
     if (name === "avatar" && files !== null && event.target.files !== null) {
-      console.log("soy avatar");
       const file = event.target.files[0];
+      setFileName(file.name);
       fileToBuffer(file)
         .then((buffer) => {
-          console.log(buffer)
           setFormData((prevState) => ({ ...prevState, [name]: buffer }));
         })
         .catch((error) => {
@@ -100,26 +90,20 @@ function Profile() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-
-    // ...Enviar formulario
     try {
       if (getCookie('token')) {
         const config = {
           headers: { Authorization: `Bearer ${getCookie('token')}` }
         };
-        console.log(formData);
         const response = await axios.patch('http://localhost:3000/profile/' + profileid, formData, config);
         const responseUser = await axios.patch('http://localhost:3000/login/' + userid, formDataUser, config);
         setCookie('user', responseUser.data.user);
         const responseProfile = await axios.get('http://localhost:3000/profile/' + getCookie('user'), config);
         dispatch(setProfileData(responseProfile.data))
-
+        setFileName("");
       }
-
-      // redirect to login page
     } catch (error) {
       console.log(error)
-
       return;
     }
 
@@ -127,7 +111,6 @@ function Profile() {
 
   async function handleSubmitDeleteUser(event: React.MouseEvent<HTMLButtonElement>, id: number) {
     event.preventDefault();
-    // ...Enviar formulario
     try {
       if (getCookie('token')) {
         const config = {
@@ -217,6 +200,7 @@ function Profile() {
                           <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                         </div>
                       </div>
+                          <p className="text-green-500 font-bold truncate text-center">{fileName}</p>
                     </div>
                   </div>
                 </div>
@@ -321,24 +305,20 @@ function Profile() {
 
 export async function getServerSideProps(context: NextPageContext) {
   const { req, res } = context;
-
-  // Verificar si la cookie existe
   const token = getCookie('token') ? true : false;
 
   if (!token) {
-    // Si la cookie no existe, redirigir al usuario a la página de inicio de sesión
+    
     if (res) {
       res.writeHead(302, { Location: '/' });
       res.end();
     } else {
-      // Si se ejecuta en el lado del cliente, redirigir utilizando la API del navegador
+     
       window.location.href = '/';
     }
   }
 
-  // Si la cookie existe, continuar con la renderización de la página
   return { props: {} };
 }
-
 
 export default Profile;

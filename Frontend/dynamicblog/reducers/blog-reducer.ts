@@ -2,7 +2,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 
-
 export const blogInfo = createSlice({
   name: "blog",
   initialState: [] ,
@@ -12,8 +11,6 @@ export const blogInfo = createSlice({
     },
   },
 });
-
-
 
 export const { setBlogData } = blogInfo.actions;
 

@@ -7,19 +7,13 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { setCookie, getCookie } from 'cookies-next';
 import { NextPageContext } from 'next';
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setProfileData } from "../reducers/profile-reducer";
 
-
-
-function classNames(...classes: any[]) {
-  return classes.filter(Boolean).join(' ')
-}
 
 function Login() {
 
   const router = useRouter();
-  const profileData = useSelector((state: any) => state.profile);
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -36,7 +30,6 @@ function Login() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    // ...Enviar formulario
     try {
       const response = await axios.post('http://localhost:3000/auth/login', formData);
       const token = response.data.access_token;
@@ -51,8 +44,6 @@ function Login() {
       const responseProfile = await axios.get('http://localhost:3000/profile/' + user, config);
       dispatch(setProfileData(responseProfile.data))
       
-
-      // redirect to login page
     } catch (error) {
       const passwordError = document.getElementById("password-error");
       if (passwordError) {
@@ -144,22 +135,19 @@ function Login() {
 
 export async function getServerSideProps(context: NextPageContext) {
   const { req, res } = context;
-
-  // Verificar si la cookie existe
   const token = getCookie('token') ? true : false;
 
   if (!token) {
-    // Si la cookie no existe, redirigir al usuario a la página de inicio de sesión
+  
     if (res) {
       res.writeHead(302, { Location: '/' });
       res.end();
     } else {
-      // Si se ejecuta en el lado del cliente, redirigir utilizando la API del navegador
+     
       window.location.href = '/';
     }
   }
 
-  // Si la cookie existe, continuar con la renderización de la página
   return { props: {} };
 }
 

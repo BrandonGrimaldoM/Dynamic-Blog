@@ -60,7 +60,7 @@ export class BlogService {
 
     if (!id) {
       throw new NotFoundException(
-        `Profile with id ${createDoDto.blogId} not found`,
+        `Blog with id ${createDoDto.blogId} not found`,
       );
     }
     const document = new DocumentEntity();
@@ -110,14 +110,10 @@ export class BlogService {
     return blogs;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} blog`;
-  }
-
   async update(id: number, updateBlogDto: UpdateBlogDto) {
     const blog = await this.blogRepository.findOne({ where: { id } });
     if (!blog) {
-      throw new NotFoundException(`Login with id ${id} not found`);
+      throw new NotFoundException(`Blog with id ${id} not found`);
     }
 
     if (updateBlogDto.title !== '') {
@@ -147,7 +143,7 @@ export class BlogService {
   async updateDoc(id: number, updateDocDto: UpdateDocDto) {
     const document = await this.documentRepository.findOne({ where: { id } });
     if (!document) {
-      throw new NotFoundException(`Login with id ${id} not found`);
+      throw new NotFoundException(`Document with id ${id} not found`);
     }
 
     if (updateDocDto.text !== '') {
@@ -170,7 +166,7 @@ export class BlogService {
   async removeDoc(id: number): Promise<void> {
     const doc = await this.documentRepository.findOne({ where: { id } });
     if (!doc) {
-      throw new NotFoundException(`Login with id ${id} not found`);
+      throw new NotFoundException(`Document with id ${id} not found`);
     }
     await this.documentRepository.delete(id);
   }

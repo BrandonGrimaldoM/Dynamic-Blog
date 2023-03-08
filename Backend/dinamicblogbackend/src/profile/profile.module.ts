@@ -6,10 +6,7 @@ import { BlogModule } from '../blog/blog.module';
 import { ProfileEntity, LoginEntity } from 'src/blog/entities/blog.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([ProfileEntity, LoginEntity]),
-    BlogModule, // Añadimos el módulo que contiene la entidad a los imports
-  ],
+  imports: [TypeOrmModule.forFeature([ProfileEntity, LoginEntity]), BlogModule],
   controllers: [ProfileController],
   providers: [ProfileService],
 })

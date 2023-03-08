@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { LoginService } from './login.service';
 import { CreateLoginDto } from './dto/create-login.dto';
 import { UpdateLoginDto } from './dto/update-login.dto';
@@ -29,16 +21,6 @@ export class LoginController {
     return result;
   }
 
-  @Get()
-  async findAll() {
-    return this.loginService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.loginService.findOne(+id);
-  }
-
   @Patch(':id')
   async update(
     @Param('id') id: number,
@@ -50,6 +32,6 @@ export class LoginController {
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<{ message: string }> {
     await this.loginService.remove(+id);
-    return { message: `Blog ${id} has been deleted` };
+    return { message: `Profile ${id} has been deleted` };
   }
 }

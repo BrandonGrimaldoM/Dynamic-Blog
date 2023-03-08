@@ -5,16 +5,13 @@ import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
-  app.use(bodyParser.json({ limit: '50mb' })); // Establece el límite de carga útil en 50 MB
-  // Configuración Swagger en NestJS
+  app.use(bodyParser.json({ limit: '50mb' }));
   const config = new DocumentBuilder()
     .setTitle('Dinamic Blog')
     .setDescription('Documentation Dinamic Blog')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-
-  // URL API
   SwaggerModule.setup('docs', app, document);
 
   await app.listen(3000);

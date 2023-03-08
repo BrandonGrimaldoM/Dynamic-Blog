@@ -2,7 +2,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 
-
 export const currenlyBlog = createSlice({
   name: "currenly",
   initialState: 0 ,
@@ -12,8 +11,6 @@ export const currenlyBlog = createSlice({
     },
   },
 });
-
-
 
 export const { setCurrenlyBlogData } = currenlyBlog.actions;
 

@@ -74,7 +74,7 @@ function BlogEditer() {
 
   async function handleSubmitDeleteBlog(event: React.MouseEvent<HTMLButtonElement>, id: number) {
     event.preventDefault();
-    // ...Enviar formulario
+
     try {
       if (getCookie('token')) {
         const config = {
@@ -92,9 +92,9 @@ function BlogEditer() {
   }
 
 
-  async function handleSubmitState(event: React.MouseEvent<HTMLButtonElement>, id: number, stateInfo: string ) {
+  async function handleSubmitState(event: React.MouseEvent<HTMLButtonElement>, id: number, stateInfo: string) {
     event.preventDefault();
-    // ...Enviar formulario
+
     try {
       if (getCookie('token')) {
         const config = {
@@ -222,32 +222,35 @@ function BlogEditer() {
                     <Menu.Items className="absolute right-0 z-10 mt-2 -mr-1 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <Menu.Item>
                         {({ active }) => (
-                          <a
-                            href="#"
+                          <Link
+                            href='/edit-blog'
+                            onClick={() => dispatch(setCurrenlyBlogData(blog.id))}
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Edit
-                          </a>
+                          </Link>
                         )}
                       </Menu.Item>
                       <Menu.Item>
+
                         {({ active }) => (
-                          <a
-                            href="#"
+                          <Link
+                            href={"/blog/" + blog.title}
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             View
-                          </a>
+                          </Link>
                         )}
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <a
-                            href="#"
+                          <button
+
+                            onClick={(even) => handleSubmitDeleteBlog(even, blog.id)}
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Delete
-                          </a>
+                          </button>
                         )}
                       </Menu.Item>
                     </Menu.Items>
@@ -275,22 +278,18 @@ function BlogEditer() {
 
 export async function getServerSideProps(context: NextPageContext) {
   const { req, res } = context;
-
-  // Verificar si la cookie existe
   const token = getCookie('token') ? true : false;
 
   if (!token) {
-    // Si la cookie no existe, redirigir al usuario a la página de inicio de sesión
+
     if (res) {
       res.writeHead(302, { Location: '/' });
       res.end();
     } else {
-      // Si se ejecuta en el lado del cliente, redirigir utilizando la API del navegador
+
       window.location.href = '/';
     }
   }
-
-  // Si la cookie existe, continuar con la renderización de la página
   return { props: {} };
 }
 

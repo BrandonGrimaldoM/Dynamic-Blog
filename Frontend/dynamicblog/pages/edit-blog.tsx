@@ -7,13 +7,8 @@ import { setBlogData } from "../reducers/blog-reducer";
 import axios from 'axios';
 import { NextPageContext } from 'next';
 
-function classNames(...classes: any[]) {
-  return classes.filter(Boolean).join(' ')
-}
-
 function EditBlog() {
 
-  const profileData = useSelector((state: any) => state.profile);
   const blogData = useSelector((state: any) => state.blog);
   const dispatch = useDispatch();
   const currenlyBlog = useSelector((state: any) => state.currenly)
@@ -29,9 +24,9 @@ function EditBlog() {
   const [editText, setEditText] = useState(false);
   const [editImage, setEditImage] = useState(false);
   const [auxDocId, setauxDocId] = useState(0);
-  
 
-
+  const [fileName, setFileName] = useState("");
+  const [fileNameDoc, setFileNameDoc] = useState("");
 
 
   interface RootObject {
@@ -66,8 +61,6 @@ function EditBlog() {
 
   const [blogs, setBlog] = useState<RootObject[]>([]);
   const [documents, setDocument] = useState<RootObject[]>([]);
-
-
 
   const handleEdit = () => {
     setEdited(true);
@@ -130,11 +123,10 @@ function EditBlog() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = event.target;
     if (name === "images" && files !== null && event.target.files !== null) {
-      console.log("soy avatar");
       const file = event.target.files[0];
+      setFileName(file.name);
       fileToBuffer(file)
         .then((buffer) => {
-          console.log(buffer)
           setFormData((prevState: any) => ({ ...prevState, image: buffer }));
         })
         .catch((error) => {
@@ -163,11 +155,10 @@ function EditBlog() {
   const handleChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = event.target;
     if (name === "docimages" && files !== null && event.target.files !== null) {
-      console.log("soy imagensita");
       const file = event.target.files[0];
+      setFileNameDoc(file.name)
       fileToBuffer(file)
         .then((bufferdoc) => {
-          console.log(bufferdoc)
           setFormImage((prevFormImage: any) => ({ ...prevFormImage, image: bufferdoc }));
         })
         .catch((error) => {
@@ -176,25 +167,20 @@ function EditBlog() {
     }
   }
 
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-
-    // ...Enviar formulario
+    setFileName("")
     try {
       if (getCookie('token')) {
         const config = {
           headers: { Authorization: `Bearer ${getCookie('token')}` }
         };
 
-
         const responseNewPost = await axios.patch(`http://localhost:3000/blog/${currenlyBlog}`, formData, config);
         dispatch(setBlogData([]));
 
       }
 
-      // redirect to login page
     } catch (error) {
       console.log(error)
 
@@ -205,7 +191,7 @@ function EditBlog() {
 
   async function handleSubmitText(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
-    // ...Enviar formulario
+
     try {
       if (getCookie('token')) {
         const config = {
@@ -225,7 +211,7 @@ function EditBlog() {
 
   async function handleSubmitUpdateTitle(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
-    // ...Enviar formulario
+
     try {
       if (getCookie('token')) {
         const config = {
@@ -245,7 +231,7 @@ function EditBlog() {
 
   async function handleSubmitP(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
-    // ...Enviar formulario
+
     try {
       if (getCookie('token')) {
         const config = {
@@ -265,7 +251,7 @@ function EditBlog() {
 
   async function handleSubmitUpdateText(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
-    // ...Enviar formulario
+
     try {
       if (getCookie('token')) {
         const config = {
@@ -285,14 +271,13 @@ function EditBlog() {
 
   async function handleSubmitImage(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
-    // ...Enviar formulario
+    setFileNameDoc("")
     try {
       if (getCookie('token')) {
         const config = {
           headers: { Authorization: `Bearer ${getCookie('token')}` }
         };
         const responseNewDoc = await axios.post("http://localhost:3000/blog/docs", formImage, config);
-        console.log(formImage);
         dispatch(setBlogData([]));
       }
       setNewImage(!newImage)
@@ -305,7 +290,7 @@ function EditBlog() {
 
   async function handleSubmitUpdateImage(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
-    // ...Enviar formulario
+    setFileNameDoc("")
     try {
       if (getCookie('token')) {
         const config = {
@@ -313,7 +298,6 @@ function EditBlog() {
         };
         const responseNewDoc = await axios.patch("http://localhost:3000/blog/docs/" + auxDocId, formImage, config);
         setFormImage(prev => ({ ...prev, image: null }));
-        console.log(formImage);
         dispatch(setBlogData([]));
       }
       setEditImage(!editImage)
@@ -326,7 +310,7 @@ function EditBlog() {
 
   async function handleSubmitDeleteDocument(event: React.MouseEvent<HTMLButtonElement>, id: number) {
     event.preventDefault();
-    // ...Enviar formulario
+
     try {
       if (getCookie('token')) {
         const config = {
@@ -419,6 +403,7 @@ function EditBlog() {
               <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
             </div>
           </div>
+          <p className="text-green-500 font-bold truncate text-center">{fileName}</p>
           <div className="mt-10">
             {
               edited ?
@@ -494,7 +479,7 @@ function EditBlog() {
                         </button>
                         <button
                           type="button"
-                          onClick={(even) =>  handleSubmitDeleteDocument(even,doc.id) }
+                          onClick={(even) => handleSubmitDeleteDocument(even, doc.id)}
                           className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                           Delete
@@ -506,7 +491,6 @@ function EditBlog() {
                 )
 
                 :
-
 
                 doc.html === "p" ?
 
@@ -559,7 +543,7 @@ function EditBlog() {
                             </button>
                             <button
                               type="button"
-                              onClick={(even) =>  handleSubmitDeleteDocument(even,doc.id) }
+                              onClick={(even) => handleSubmitDeleteDocument(even, doc.id)}
                               className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                               Delete
@@ -610,6 +594,7 @@ function EditBlog() {
                                 <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                               </div>
                             </div>
+                            <p className="text-green-500 font-bold truncate text-center">{fileNameDoc}</p>
                             <br></br>
                             <button
                               type="button"
@@ -638,7 +623,7 @@ function EditBlog() {
                               </button>
                               <button
                                 type="button"
-                                onClick={(even) =>  handleSubmitDeleteDocument(even,doc.id) }
+                                onClick={(even) => handleSubmitDeleteDocument(even, doc.id)}
                                 className="ml-5 block w-full rounded-md bg-red-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                               >
                                 Delete
@@ -745,6 +730,7 @@ function EditBlog() {
                     <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                   </div>
                 </div>
+                <p className="text-green-500 font-bold truncate text-center">{fileNameDoc}</p>
                 <br></br>
                 <button
                   type="button"
@@ -792,15 +778,8 @@ function EditBlog() {
 
             }
 
-
-
-
-
-
           </div>
-
         </form>
-
       </div>
     </React.Fragment>
   )
@@ -808,22 +787,19 @@ function EditBlog() {
 
 export async function getServerSideProps(context: NextPageContext) {
   const { req, res } = context;
-
-  // Verificar si la cookie existe
   const token = getCookie('token') ? true : false;
 
   if (!token) {
-    // Si la cookie no existe, redirigir al usuario a la página de inicio de sesión
+
     if (res) {
       res.writeHead(302, { Location: '/' });
       res.end();
     } else {
-      // Si se ejecuta en el lado del cliente, redirigir utilizando la API del navegador
+
       window.location.href = '/';
     }
   }
 
-  // Si la cookie existe, continuar con la renderización de la página
   return { props: {} };
 }
 

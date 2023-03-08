@@ -17,7 +17,7 @@ import {
       BlogEntity,
       DocumentEntity,
     ]),
-    BlogModule, // Añadimos el módulo que contiene la entidad a los imports
+    BlogModule,
   ],
   controllers: [LoginController],
   providers: [LoginService],

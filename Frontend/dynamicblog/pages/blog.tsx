@@ -57,15 +57,10 @@ function Blog() {
 
   }, [paginationBlog])
 
-
-
-
   return (
     <React.Fragment>
       <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-center">Blog</h1>
-
-
         <div>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 ">
             <div className="mx-auto max-w-2xl py-16 sm:py-24 ">
@@ -91,8 +86,6 @@ function Blog() {
                   </div>
                 ))}
               </div>
-
-
 
               <nav aria-label="Page navigation" className="mt-20 font-semibold flex items-center justify-center">
                 <ul className="inline-flex -space-x-px ">
@@ -141,15 +134,9 @@ function Blog() {
                   }
                 </ul>
               </nav>
-
-
-
-
             </div>
           </div>
         </div>
-
-
       </div>
     </React.Fragment>
   )

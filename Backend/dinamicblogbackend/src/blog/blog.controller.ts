@@ -56,11 +56,6 @@ export class BlogController {
     return this.blogService.getBlogs(page, limit);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.blogService.findOne(+id);
-  }
-
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateBlogDto: UpdateBlogDto) {
     return await this.blogService.update(id, updateBlogDto);
