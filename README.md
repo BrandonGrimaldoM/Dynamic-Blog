@@ -14,7 +14,7 @@ This project was created using:
 * JWT
 * MySql
 
-[![Alt text](https://img.youtube.com/vi/-N-3uhonBPY/0.jpg)](https://youtu.be/-N-3uhonBPY)
+[![Alt text](https://raw.githubusercontent.com/BrandonGrimaldoM/Dynamic-Blog/master/video-blog.JPG)](https://youtu.be/-N-3uhonBPY)
 
 ## Backend
 
